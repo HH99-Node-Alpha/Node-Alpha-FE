@@ -1,7 +1,9 @@
+import Router from "./shared/Router";
+
 function App() {
   return (
     <>
-      <div className=" text-5xl">하이</div>
+      <Router />
     </>
   );
 }
