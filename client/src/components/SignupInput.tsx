@@ -13,6 +13,7 @@ const SignupInput: React.FC<SignupInputProps> = ({
   placeholder,
   type = "text",
   onChange,
+  name,
 }) => {
   return (
     <div className="flex flex-col ">
@@ -22,6 +23,7 @@ const SignupInput: React.FC<SignupInputProps> = ({
         placeholder={placeholder}
         type={type}
         onChange={onChange}
+        name={name}
       />
     </div>
   );
