@@ -1,4 +1,39 @@
-function SignUp() {
+import { useState, ChangeEvent, FC } from "react";
+import SignupInput from "../components/SignupInput";
+import { postAPI } from "../axios";
+import { useNavigate } from "react-router-dom";
+
+interface SignupRequest {
+  email: string;
+  name: string;
+  password: string;
+  confirm: string;
+}
+
+const SignUp: FC = () => {
+  const navigate = useNavigate();
+  const [signupRequest, setSignupRequest] = useState<SignupRequest>({
+    email: "",
+    name: "",
+    password: "",
+    confirm: "",
+  });
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setSignupRequest((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async () => {
+    try {
+      const response = await postAPI("/api/signup", signupRequest);
+      console.log(response.data);
+      navigate("/login");
+    } catch (error: any) {
+      console.error("Signup error:", error.response?.data || error.message);
+    }
+  };
+
   return (
     <>
       <div className="w-screen h-screen flex justify-center items-center bg-[#F8F0E5]">
@@ -10,35 +45,38 @@ function SignUp() {
             <div className="w-[320px] text-[18px] h-20 h- flex justify-center items-center">
               Signup to Alpha
             </div>
-            <div className="flex flex-col">
-              <div className="px-1 text-[14px] mb-[2px]">이메일</div>
-              <input
-                className="w-[320px] h-10 px-2 border-2 border-black rounded-md outline-none "
-                placeholder="이메일을 입력해주세요"
-              />
-            </div>
-            <div className="flex flex-col ">
-              <div className="px-1 text-[14px] mb-[2px]">이름</div>
-              <input
-                className="w-[320px] h-10 px-2 border-2 border-black rounded-md outline-none"
-                placeholder="이름을 입력해주세요"
-              />
-            </div>
-            <div className="flex flex-col ">
-              <div className="px-1 text-[14px] mb-[2px]">비밀번호</div>
-              <input
-                className="w-[320px] h-10 px-2 border-2 border-black rounded-md outline-none"
-                placeholder="비밀번호를 입력해주세요"
-              />
-            </div>
-            <div className="flex flex-col">
-              <div className="px-1 text-[14px] mb-[2px]">비밀번호 확인</div>
-              <input
-                className="w-[320px] h-10 px-2 border-2 border-black rounded-md outline-none"
-                placeholder="비밀번호 확인"
-              />
-            </div>
-            <button className="w-[320px] h-10 mt-6 border-2 rounded-md border-black text-black bg-[#DAC0A3]">
+            <SignupInput
+              label="이메일"
+              placeholder="이메일을 입력해주세요"
+              type="text"
+              onChange={(e) => handleChange(e)}
+              name="email"
+            />
+            <SignupInput
+              label="이름"
+              placeholder="이름을 입력해주세요"
+              type="text"
+              onChange={(e) => handleChange(e)}
+              name="name"
+            />
+            <SignupInput
+              label="비밀번호"
+              placeholder="비밀번호를 입력해주세요"
+              type="password"
+              onChange={(e) => handleChange(e)}
+              name="password"
+            />
+            <SignupInput
+              label="비밀번호 확인"
+              placeholder="비밀번호 확인"
+              type="password"
+              onChange={(e) => handleChange(e)}
+              name="confirm"
+            />
+            <button
+              className="w-[320px] h-10 mt-6 border-2 rounded-md border-black text-black bg-[#DAC0A3]"
+              onClick={handleSubmit}
+            >
               Continue
             </button>
           </body>
@@ -51,6 +89,6 @@ function SignUp() {
       </div>
     </>
   );
-}
+};
 
 export default SignUp;
