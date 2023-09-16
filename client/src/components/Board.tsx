@@ -7,8 +7,8 @@ import {
 } from "react-beautiful-dnd";
 import { BsPersonPlus } from "react-icons/bs";
 import { GiHamburgerMenu } from "react-icons/gi";
-import { TItem, TItemStatus, TList } from "../types/dnd";
-import { getItemStyle, getListStyle } from "../utils/dnd";
+import { TCard, TCardStatus, TColumn } from "../types/dnd";
+import { getCardStyle, getColumnStyle } from "../utils/dnd";
 import RightSidebar from "./RightSidebar";
 
 type BoardProps = {
@@ -16,77 +16,80 @@ type BoardProps = {
 };
 
 function Board({ boardId }: BoardProps) {
-  const [lists, setLists] = useState<TList[]>([]);
+  const [columns, setColumns] = useState<TColumn[]>([]);
   const [rightSidebarOpen, setRightSidebarOpen] = useState(false);
 
-  // 리스트 추가 기능
-  const addList = () => {
-    const newList = {
-      id: `list-${lists.length + 1}`,
-      title: `List ${lists.length + 1}`,
-      items: [],
+  // Column 추가 기능
+  const addColumn = () => {
+    const newColumn = {
+      id: `column-${columns.length + 1}`,
+      title: `Column ${columns.length + 1}`,
+      cards: [],
     };
-    setLists([...lists, newList]);
+    setColumns([...columns, newColumn]);
   };
 
-  // 카드 추가 기능
-  const addItem = (listId: string) => {
-    const newTitle = prompt("Enter new card title");
+  // Card 추가 기능
+  const addCard = (columnId: string) => {
+    const newTitle = prompt("새 카드의 제목을 입력하세요");
     if (newTitle) {
-      const newItem: TItem = {
+      const newCard: TCard = {
         id: `${Date.now()}`,
         title: "New Card",
-        status: "todo" as TItemStatus,
+        status: "todo" as TCardStatus,
       };
-      setLists(
-        lists.map((list) =>
-          list.id === listId
-            ? { ...list, items: [...list.items, newItem] }
-            : list
+      setColumns(
+        columns.map((column) =>
+          column.id === columnId
+            ? { ...column, cards: [...column.cards, newCard] }
+            : column
         )
       );
     }
   };
-
   const onDragEnd = ({ source, destination, type }: DropResult) => {
     if (!destination) return;
 
-    if (type === "list") {
-      const reorderedLists = Array.from(lists);
-      const [movedList] = reorderedLists.splice(source.index, 1);
-      reorderedLists.splice(destination.index, 0, movedList);
-      setLists(reorderedLists);
+    if (type === "column") {
+      const reorderedColumns = Array.from(columns);
+      const [movedColumn] = reorderedColumns.splice(source.index, 1);
+      reorderedColumns.splice(destination.index, 0, movedColumn);
+      setColumns(reorderedColumns);
       return;
     }
 
-    const sourceList = lists.find((list) => list.id === source.droppableId);
-    const destList = lists.find((list) => list.id === destination.droppableId);
+    const sourceColumn = columns.find(
+      (column) => column.id === source.droppableId
+    );
+    const destColumn = columns.find(
+      (column) => column.id === destination.droppableId
+    );
 
-    if (sourceList && destList) {
-      if (sourceList.id === destList.id) {
-        const reorderedItems = Array.from(sourceList.items);
-        const [movedItem] = reorderedItems.splice(source.index, 1);
-        reorderedItems.splice(destination.index, 0, movedItem);
-        setLists(
-          lists.map((list) =>
-            list.id === sourceList.id
-              ? { ...list, items: reorderedItems }
-              : list
+    if (sourceColumn && destColumn) {
+      if (sourceColumn.id === destColumn.id) {
+        const reorderedCards = Array.from(sourceColumn.cards);
+        const [movedCard] = reorderedCards.splice(source.index, 1);
+        reorderedCards.splice(destination.index, 0, movedCard);
+        setColumns(
+          columns.map((column) =>
+            column.id === sourceColumn.id
+              ? { ...column, cards: reorderedCards }
+              : column
           )
         );
       } else {
-        const sourceItems = Array.from(sourceList.items);
-        const destItems = Array.from(destList.items);
-        const [movedItem] = sourceItems.splice(source.index, 1);
-        destItems.splice(destination.index, 0, movedItem);
+        const sourceCards = Array.from(sourceColumn.cards);
+        const destCards = Array.from(destColumn.cards);
+        const [movedCard] = sourceCards.splice(source.index, 1);
+        destCards.splice(destination.index, 0, movedCard);
 
-        setLists(
-          lists.map((list) =>
-            list.id === sourceList.id
-              ? { ...list, items: sourceItems }
-              : list.id === destList.id
-              ? { ...list, items: destItems }
-              : list
+        setColumns(
+          columns.map((column) =>
+            column.id === sourceColumn.id
+              ? { ...column, cards: sourceCards }
+              : column.id === destColumn.id
+              ? { ...column, cards: destCards }
+              : column
           )
         );
       }
@@ -106,7 +109,6 @@ function Board({ boardId }: BoardProps) {
   if (!enabled) {
     return null;
   }
-
   return (
     <div className="h-full w-full">
       <div className="w-full h-[64px] text-white flex justify-between p-4 mb-4 gap-8 items-center border-b-2 cursor-pointer">
@@ -125,35 +127,43 @@ function Board({ boardId }: BoardProps) {
       </div>
 
       <DragDropContext onDragEnd={onDragEnd}>
-        <Droppable droppableId="all-lists" direction="horizontal" type="list">
+        <Droppable
+          droppableId="all-columns"
+          direction="horizontal"
+          type="column"
+        >
           {(provided) => (
             <div
               className="flex"
               ref={provided.innerRef}
               {...provided.droppableProps}
             >
-              {lists.map((list, index) => (
-                <Draggable key={list.id} draggableId={list.id} index={index}>
+              {columns.map((column, index) => (
+                <Draggable
+                  key={column.id}
+                  draggableId={column.id}
+                  index={index}
+                >
                   {(provided) => (
                     <div
                       ref={provided.innerRef}
                       {...provided.draggableProps}
                       {...provided.dragHandleProps}
                     >
-                      <Droppable droppableId={list.id} key={list.id}>
+                      <Droppable droppableId={column.id} key={column.id}>
                         {(provided, snapshot) => (
                           <div
                             ref={provided.innerRef}
                             {...provided.droppableProps}
                             style={{
-                              ...getListStyle(snapshot.isDraggingOver),
+                              ...getColumnStyle(snapshot.isDraggingOver),
                             }}
                           >
-                            <h2>{list.title}</h2>
-                            {list.items.map((item, index) => (
+                            <h2>{column.title}</h2>
+                            {column.cards.map((card, index) => (
                               <Draggable
-                                key={item.id}
-                                draggableId={item.id}
+                                key={card.id}
+                                draggableId={card.id}
                                 index={index}
                               >
                                 {(provided, snapshot) => (
@@ -162,19 +172,19 @@ function Board({ boardId }: BoardProps) {
                                     {...provided.draggableProps}
                                     {...provided.dragHandleProps}
                                     style={{
-                                      ...getItemStyle(
+                                      ...getCardStyle(
                                         snapshot.isDragging,
                                         provided.draggableProps.style || {}
                                       ),
                                     }}
                                   >
-                                    {item.title}
+                                    {card.title}
                                   </div>
                                 )}
                               </Draggable>
                             ))}
                             <button
-                              onClick={() => addItem(list.id)}
+                              onClick={() => addCard(column.id)}
                               className="bg-green-500 p-2 rounded w-full text-white mt-2"
                             >
                               +
@@ -188,7 +198,7 @@ function Board({ boardId }: BoardProps) {
                 </Draggable>
               ))}
               <button
-                onClick={addList}
+                onClick={addColumn}
                 className="bg-green-500 p-4 w-[200px] h-[40px] flex items-center justify-center rounded text-white m-2"
               >
                 +
@@ -207,5 +217,4 @@ function Board({ boardId }: BoardProps) {
     </div>
   );
 }
-
 export default Board;

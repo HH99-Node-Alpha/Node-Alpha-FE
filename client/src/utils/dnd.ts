@@ -1,5 +1,4 @@
-// 이것은 드래그 중일 때의 리스트 스타일을 반환하는 함수입니다.
-export function getListStyle(isDraggingOver: boolean): React.CSSProperties {
+export function getColumnStyle(isDraggingOver: boolean): React.CSSProperties {
   return {
     background: isDraggingOver ? "lightblue" : "lightgrey",
     padding: 8,
@@ -7,8 +6,7 @@ export function getListStyle(isDraggingOver: boolean): React.CSSProperties {
   };
 }
 
-// 이것은 드래그 중일 때의 아이템 스타일을 반환하는 함수입니다.
-export function getItemStyle(
+export function getCardStyle(
   isDragging: boolean,
   draggableStyle: React.CSSProperties
 ): React.CSSProperties {

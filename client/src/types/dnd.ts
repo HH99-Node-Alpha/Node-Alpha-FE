@@ -1,13 +1,13 @@
-export type TItemStatus = "todo" | "doing";
+export type TCardStatus = "todo" | "doing";
 
-export type TItem = {
+export type TCard = {
   id: string;
-  status: TItemStatus;
+  status: TCardStatus;
   title: string;
 };
 
-export type TList = {
+export type TColumn = {
   id: string;
   title: string;
-  items: TItem[];
+  cards: TCard[];
 };
