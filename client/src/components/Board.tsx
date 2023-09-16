@@ -135,7 +135,7 @@ function Board({ boardId }: BoardProps) {
         >
           {(provided) => (
             <div
-              className="flex gap-4 px-2 mt-2"
+              className="flex gap-2 px-2 mt-2"
               ref={provided.innerRef}
               {...provided.droppableProps}
             >
