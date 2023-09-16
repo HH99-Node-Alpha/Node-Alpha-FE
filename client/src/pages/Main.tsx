@@ -11,11 +11,12 @@ import {
 } from "react-beautiful-dnd";
 import { TItem, TItemStatus, TList } from "../types/dnd";
 import { getItemStyle, getListStyle } from "../utils/dnd";
-
-let interval: number = 3000;
+import io from "socket.io-client";
 
 function Main() {
+  // socket.io
   const onSocket = () => {
+    const interval: number = 3000;
     const socket = io("http://localhost:8000");
 
     setInterval(() => {
