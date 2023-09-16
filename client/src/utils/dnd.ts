@@ -1,8 +1,11 @@
 export function getColumnStyle(isDraggingOver: boolean): React.CSSProperties {
   return {
-    background: isDraggingOver ? "lightblue" : "lightgrey",
+    background: "#161A1E",
+    borderRadius: "10px",
     padding: 8,
     width: 300,
+    font: "white",
+    paddingBottom: "12px",
   };
 }
 
@@ -11,10 +14,12 @@ export function getCardStyle(
   draggableStyle: React.CSSProperties
 ): React.CSSProperties {
   return {
+    marginTop: 12,
+    marginBottom: 12,
     userSelect: "none",
-    padding: 16,
-    margin: "0 0 8px 0",
-    background: isDragging ? "lightgreen" : "grey",
+    padding: 12,
+    borderRadius: "10px",
+    background: "white",
     ...draggableStyle,
   };
 }

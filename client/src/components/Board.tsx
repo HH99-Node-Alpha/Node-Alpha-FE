@@ -47,6 +47,7 @@ function Board({ boardId }: BoardProps) {
       );
     }
   };
+
   const onDragEnd = ({ source, destination, type }: DropResult) => {
     if (!destination) return;
 
@@ -134,7 +135,7 @@ function Board({ boardId }: BoardProps) {
         >
           {(provided) => (
             <div
-              className="flex"
+              className="flex gap-4 px-2"
               ref={provided.innerRef}
               {...provided.droppableProps}
             >
@@ -159,7 +160,7 @@ function Board({ boardId }: BoardProps) {
                               ...getColumnStyle(snapshot.isDraggingOver),
                             }}
                           >
-                            <h2>{column.title}</h2>
+                            <h2 className="text-white mb-2">{column.title}</h2>
                             {column.cards.map((card, index) => (
                               <Draggable
                                 key={card.id}
@@ -185,7 +186,7 @@ function Board({ boardId }: BoardProps) {
                             ))}
                             <button
                               onClick={() => addCard(column.id)}
-                              className="bg-green-500 p-2 rounded w-full text-white mt-2"
+                              className="bg-white p-2 rounded w-full text-black"
                             >
                               +
                             </button>
@@ -199,7 +200,7 @@ function Board({ boardId }: BoardProps) {
               ))}
               <button
                 onClick={addColumn}
-                className="bg-green-500 p-4 w-[200px] h-[40px] flex items-center justify-center rounded text-white m-2"
+                className="bg-white p-4 w-[280px] h-[40px] flex items-center justify-center rounded text-black "
               >
                 +
               </button>

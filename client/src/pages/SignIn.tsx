@@ -25,7 +25,7 @@ const SignIn: FC = () => {
       console.log(signinRequest);
       const response = await postAPI("/api/login", signinRequest);
       console.log(response.data);
-      navigate("/");
+      navigate("/workspace/1/boards/1");
     } catch (error: any) {
       console.error("Signin error:", error.response?.data || error.message);
     }
