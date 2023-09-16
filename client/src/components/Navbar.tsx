@@ -14,13 +14,17 @@ function Navbar() {
 
   return (
     <>
-      <nav className="w-full h-16 py-3 px-10 flex justify-between bg-[#1D2125] z-10 ">
+      <nav className="w-full h-16 py-3 pl-2 flex justify-between bg-[#1D2125] z-10 ">
         <div className="flex gap-8 cursor-pointer">
           <div
             onClick={() => navigate("/")}
             className="flex h-full justify-center items-center text-white"
           >
-            로고
+            <img
+              className="w-[60px] h-[60px] mt-[6px]"
+              src={process.env.PUBLIC_URL + "/assets/alpha-logo.png"}
+              alt="logo"
+            />
           </div>
           <div className="flex h-full justify-center items-center text-white hover:opacity-50">
             Workspaces
