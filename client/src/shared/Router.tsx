@@ -7,7 +7,10 @@ function Router() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Main />} />
+        <Route
+          path="/workspaces/:workspaceId/boards/:boardId"
+          element={<Main />}
+        />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/signin" element={<SignIn />} />
       </Routes>
