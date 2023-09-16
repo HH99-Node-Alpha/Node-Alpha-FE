@@ -29,7 +29,7 @@ const SignUp: FC = () => {
       console.log(signupRequest);
       const response = await postAPI("/api/signup", signupRequest);
       console.log(response.data);
-      navigate("/login");
+      navigate("/signin");
     } catch (error: any) {
       console.error("Signup error:", error.response?.data || error.message);
     }
