@@ -3,8 +3,22 @@ import { GoBell } from "react-icons/go";
 import { BsPerson, BsPersonPlus } from "react-icons/bs";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { useState } from "react";
+import { io } from "socket.io-client";
+
+let interval: number = 3000;
 
 function Main() {
+  const onSocket = () => {
+    const socket = io("http://localhost:8000");
+
+    setInterval(() => {
+      socket.emit("toServer", "클라이언트 -> 서버");
+    }, interval);
+
+    socket.on("toClient", (data) => console.log(data)); // 서버 -> 클라이언트
+  };
+  onSocket();
+
   const navigate = useNavigate();
   const [rightSidebarOpen, setRightSidebarOpen] = useState(false);
 
