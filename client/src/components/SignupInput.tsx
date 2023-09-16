@@ -17,7 +17,7 @@ const SignupInput: React.FC<SignupInputProps> = ({
 }) => {
   return (
     <div className="flex flex-col ">
-      <div className="px-1 text-[14px] mb-[2px]">{label}</div>
+      <div className="px-1 text-[14px] text-white mb-[2px]">{label}</div>
       <input
         className="w-[320px] h-10 px-2 border-2 border-black rounded-md outline-none"
         placeholder={placeholder}

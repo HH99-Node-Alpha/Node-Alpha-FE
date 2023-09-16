@@ -37,13 +37,16 @@ const SignUp: FC = () => {
 
   return (
     <>
-      <div className="w-screen h-screen flex justify-center items-center bg-[#F8F0E5]">
-        <div className="max-w-[768px] h-5/6 flex flex-1 flex-col rounded-xl bg-[#EADBC8]">
-          <header className="w-full text-[24px] h-1/6 flex justify-center items-center">
+      <div
+        className="w-screen h-screen flex justify-center items-center bg-cover"
+        style={{ backgroundImage: "url('/assets/background.svg')" }}
+      >
+        <div className="max-w-[768px] h-5/6 flex flex-1 flex-col rounded-xl bg-[#163172]">
+          <header className="w-full text-[24px] text-white h-1/6 flex justify-center items-center">
             Alpha
           </header>
           <body className="w-full h-3/6 flex flex-col gap-2 items-center">
-            <div className="w-[320px] text-[18px] h-20 h- flex justify-center items-center">
+            <div className="w-[320px] text-[18px] text-white h-20 h- flex justify-center items-center">
               Signup to Alpha
             </div>
             <SignupInput
@@ -75,14 +78,14 @@ const SignUp: FC = () => {
               name="confirm"
             />
             <button
-              className="w-[320px] h-10 mt-6 border-2 rounded-md border-black text-black bg-[#DAC0A3]"
+              className="w-[320px] h-10 mt-6 rounded-md text-black bg-white"
               onClick={handleSubmit}
             >
               Continue
             </button>
           </body>
           <footer>
-            <div className="w-full mt-10 flex justify-center items-center">
+            <div className="w-full mt-10 text-white flex justify-center items-center">
               Alpha
             </div>
           </footer>
