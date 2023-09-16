@@ -16,6 +16,7 @@ export function getCardStyle(
     marginTop: 12,
     marginBottom: 12,
     userSelect: "none",
+    padding: 12,
     borderRadius: "10px",
     background: "white",
     ...draggableStyle,
