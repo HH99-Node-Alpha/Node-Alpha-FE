@@ -112,7 +112,7 @@ function Board({ boardId }: BoardProps) {
   }
   return (
     <div className="h-full w-full">
-      <div className="w-full h-[64px] text-white flex justify-between p-4 mb-4 gap-8 items-center border-b-2 cursor-pointer">
+      <div className="w-full h-[64px] text-white flex justify-between p-4  gap-8 items-center border-b-2 cursor-pointer">
         <div>
           <div>Alpha's Board</div>
         </div>
@@ -135,7 +135,7 @@ function Board({ boardId }: BoardProps) {
         >
           {(provided) => (
             <div
-              className="flex gap-4 px-2"
+              className="flex gap-4 px-2 mt-2"
               ref={provided.innerRef}
               {...provided.droppableProps}
             >
@@ -200,7 +200,7 @@ function Board({ boardId }: BoardProps) {
               ))}
               <button
                 onClick={addColumn}
-                className="bg-white p-4 w-[280px] h-[40px] flex items-center justify-center rounded text-black "
+                className="bg-white p-4 w-[320px] h-[40px] flex items-center justify-center rounded text-black "
               >
                 +
               </button>
