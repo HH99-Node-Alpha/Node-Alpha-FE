@@ -11,8 +11,22 @@ import {
 } from "react-beautiful-dnd";
 import { TItem, TItemStatus, TList } from "../types/dnd";
 import { getItemStyle, getListStyle } from "../utils/dnd";
+import io from "socket.io-client";
 
 function Main() {
+  // socket.io
+  const onSocket = () => {
+    const interval: number = 3000;
+    const socket = io("http://localhost:8000");
+
+    setInterval(() => {
+      socket.emit("toServer", "클라이언트 -> 서버");
+    }, interval);
+
+    socket.on("toClient", (data) => console.log(data)); // 서버 -> 클라이언트
+  };
+  onSocket();
+
   const navigate = useNavigate();
   const [rightSidebarOpen, setRightSidebarOpen] = useState(false);
 
