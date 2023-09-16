@@ -9,7 +9,7 @@ function Router() {
       <Routes>
         <Route path="/" element={<Main />} />
         <Route path="/signup" element={<SignUp />} />
-        <Route path="/signIn" element={<SignIn />} />
+        <Route path="/signin" element={<SignIn />} />
       </Routes>
     </BrowserRouter>
   );
