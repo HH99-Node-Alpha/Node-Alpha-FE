@@ -36,20 +36,27 @@ function Navbar() {
             Create
           </button>
           {showModal && (
-            <div className="absolute top-16 left-52 flex z-20">
-              <div className="flex flex-col bg-white p-4 rounded shadow-lg">
+            <div className="absolute top-16 left-[220px] flex z-20">
+              <div className="flex flex-col w-[240px] h-[100px] bg-white p-4 rounded shadow-lg justify-center items-center">
                 {!selectedType ? (
                   <>
-                    <button onClick={() => setSelectedType("workspace")}>
+                    <button
+                      className="w-full hover:bg-black hover:text-white rounded-md p-2"
+                      onClick={() => setSelectedType("workspace")}
+                    >
                       Create Workspace
                     </button>
-                    <button onClick={() => setSelectedType("board")}>
+                    <button
+                      className="w-full hover:bg-black hover:text-white rounded-md p-2"
+                      onClick={() => setSelectedType("board")}
+                    >
                       Create Board
                     </button>
                   </>
                 ) : (
                   <>
                     <input
+                      className="border-2 border-black px-2 rounded-md py-1"
                       type="text"
                       placeholder={
                         selectedType === "workspace"
@@ -59,40 +66,42 @@ function Navbar() {
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                     />
-                    <button
-                      onClick={async () => {
-                        if (selectedType === "workspace") {
-                          const result = await postAPI("/api/workspaces", {
-                            workspaceName: name,
-                          });
-                          console.log(result);
-                        } else {
-                          const result = await postAPI(
-                            "/api/workspaces/1/boards",
-                            {
-                              boardName: name,
-                            }
-                          );
-                          console.log(result);
-                        }
-                        setName("");
-                        setSelectedType(null);
-                        setShowModal(false);
-                      }}
-                    >
-                      Create
-                    </button>
+                    <div className="flex justify-between w-full px-2 py-1 mt-1">
+                      <button
+                        onClick={async () => {
+                          if (selectedType === "workspace") {
+                            const result = await postAPI("/api/workspaces", {
+                              workspaceName: name,
+                            });
+                            console.log(result);
+                          } else {
+                            const result = await postAPI(
+                              "/api/workspaces/1/boards",
+                              {
+                                boardName: name,
+                              }
+                            );
+                            console.log(result);
+                          }
+                          setName("");
+                          setSelectedType(null);
+                          setShowModal(false);
+                        }}
+                      >
+                        Create
+                      </button>
+                      <button
+                        onClick={() => {
+                          setShowModal(false);
+                          setSelectedType(null);
+                          setName("");
+                        }}
+                      >
+                        Close
+                      </button>
+                    </div>
                   </>
                 )}
-                <button
-                  onClick={() => {
-                    setShowModal(false);
-                    setSelectedType(null);
-                    setName("");
-                  }}
-                >
-                  Close
-                </button>
               </div>
             </div>
           )}
