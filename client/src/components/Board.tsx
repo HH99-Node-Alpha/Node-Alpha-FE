@@ -7,7 +7,11 @@ import {
 } from "react-beautiful-dnd";
 import { useQuery } from "react-query";
 import { useParams } from "react-router-dom";
-import { addNewColumnAPI, getColumnsAPI } from "../api/boardAPI";
+import {
+  addNewColumnAPI,
+  getColumnsAPI,
+  getOneBoardAPI,
+} from "../api/boardAPI";
 import { putAPI } from "../axios";
 import { TCard, TColumn } from "../types/dnd";
 import { getCardStyle, getColumnStyle } from "../utils/dnd";
@@ -40,6 +44,12 @@ function Board({ boardId }: BoardProps) {
     {
       enabled: false,
     }
+  );
+
+  const { data: board, isLoading: boardIsLoading } = useQuery(
+    ["board", workspaceId, boardId],
+    () => getOneBoardAPI(workspaceId!, boardId),
+    { enabled: true }
   );
 
   useEffect(() => {
@@ -201,14 +211,14 @@ function Board({ boardId }: BoardProps) {
     return null;
   }
 
-  if (isLoading) {
+  if (isLoading || boardIsLoading) {
     return <div>로딩 중...</div>;
   }
 
   return (
     <div className="h-full w-full">
       <BoardHeader
-        boardName="Alpha's Board"
+        boardName={board?.boardName}
         toggleSidebar={() => setRightSidebarOpen(!rightSidebarOpen)}
       />
 

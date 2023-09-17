@@ -31,3 +31,15 @@ export const getColumnsAPI = async (workspaceId: string, boardId: string) => {
     return [];
   }
 };
+
+export const getOneBoardAPI = async (workspaceId: string, boardId: string) => {
+  try {
+    const result = await getAPI(
+      `/api/workspaces/${workspaceId}/boards/${boardId}`
+    );
+    return result.data;
+  } catch (error) {
+    console.error("Error adding new column:", error);
+    return null;
+  }
+};
