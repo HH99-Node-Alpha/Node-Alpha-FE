@@ -5,14 +5,14 @@ import {
   Draggable,
   DropResult,
 } from "react-beautiful-dnd";
-import { BsPersonPlus } from "react-icons/bs";
-import { GiHamburgerMenu } from "react-icons/gi";
 import { useQuery } from "react-query";
 import { useParams } from "react-router-dom";
 import { addNewColumnAPI, getColumnsAPI } from "../api/boardAPI";
 import { putAPI } from "../axios";
 import { TCard, TColumn } from "../types/dnd";
 import { getCardStyle, getColumnStyle } from "../utils/dnd";
+import BoardHeader from "./BoardHeader";
+import NewColumnInput from "./NewColumnInput";
 import RightSidebar from "./RightSidebar";
 
 type BoardProps = {
@@ -199,20 +199,10 @@ function Board({ boardId }: BoardProps) {
 
   return (
     <div className="h-full w-full">
-      <div className="w-full h-[64px] text-white flex justify-between p-4  gap-8 items-center border-b-2 cursor-pointer">
-        <div>
-          <div>Alpha's Board</div>
-        </div>
-        <div className="flex gap-4">
-          <button className="flex justify-center items-center gap-2 h-10 w-28 rounded-md px-2 hover:bg-[#2C3238]">
-            <BsPersonPlus />
-            <span>share</span>
-          </button>
-          <button onClick={() => setRightSidebarOpen(!rightSidebarOpen)}>
-            <GiHamburgerMenu size={24} />
-          </button>
-        </div>
-      </div>
+      <BoardHeader
+        boardName="Alpha's Board"
+        toggleSidebar={() => setRightSidebarOpen(!rightSidebarOpen)}
+      />
 
       <DragDropContext onDragEnd={onDragEnd}>
         <Droppable
@@ -305,37 +295,13 @@ function Board({ boardId }: BoardProps) {
                   )}
                 </Draggable>
               ))}
-              {isInputMode ? (
-                <div className="bg-white p-4 w-[320px] h-auto flex flex-col justify-between rounded text-black">
-                  <input
-                    value={columnName}
-                    onChange={(e) => setColumnName(e.target.value)}
-                    className="p-2 border-2 border-black rounded-md"
-                    placeholder="Column이름을 입력해주세요."
-                  />
-                  <div className="flex justify-between items-end mt-2">
-                    <button
-                      onClick={addNewColumn}
-                      className="bg-blue-500 text-white p-2 rounded h-full"
-                    >
-                      Add column
-                    </button>
-                    <button
-                      onClick={() => setInputMode(false)}
-                      className="px-[14px] py-1 h-full rounded border-black text-black border-2 hover:bg-black hover:text-white"
-                    >
-                      X
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <button
-                  onClick={() => setInputMode(true)}
-                  className="bg-white p-4 w-[320px] h-[40px] flex items-center justify-center rounded text-black"
-                >
-                  +
-                </button>
-              )}
+              <NewColumnInput
+                isInputMode={isInputMode}
+                columnName={columnName}
+                setColumnName={setColumnName}
+                addNewColumn={addNewColumn}
+                toggleInputMode={() => setInputMode(!isInputMode)}
+              />
               {provided.placeholder}
             </div>
           )}
