@@ -290,7 +290,10 @@ function Board({ boardId }: BoardProps) {
                                     {...provided.draggableProps}
                                     {...provided.dragHandleProps}
                                     style={{
-                                      ...getCardStyle(snapshot.isDragging),
+                                      ...getCardStyle(
+                                        snapshot.isDragging,
+                                        provided.draggableProps.style || {}
+                                      ),
                                     }}
                                   >
                                     {card.cardName}

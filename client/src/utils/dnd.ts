@@ -13,7 +13,10 @@ export function getColumnStyle(isDraggingOver: boolean): React.CSSProperties {
   };
 }
 
-export function getCardStyle(isDragging: boolean): React.CSSProperties {
+export function getCardStyle(
+  isDragging: boolean,
+  draggableStyle: React.CSSProperties
+): React.CSSProperties {
   return {
     marginTop: 12,
     marginBottom: 12,
@@ -22,5 +25,6 @@ export function getCardStyle(isDragging: boolean): React.CSSProperties {
     borderRadius: "10px",
     background: "white",
     width: 288,
+    ...draggableStyle,
   };
 }
