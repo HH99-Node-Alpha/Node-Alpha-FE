@@ -10,6 +10,7 @@ import { GiHamburgerMenu } from "react-icons/gi";
 import { useQuery } from "react-query";
 import { useParams } from "react-router-dom";
 import { addNewColumnAPI, getColumnsAPI } from "../api/boardAPI";
+import { putAPI } from "../axios";
 import { TCard, TColumn } from "../types/dnd";
 import { getCardStyle, getColumnStyle } from "../utils/dnd";
 import RightSidebar from "./RightSidebar";
@@ -25,6 +26,9 @@ function Board({ boardId }: BoardProps) {
   const [rightSidebarOpen, setRightSidebarOpen] = useState<boolean>(false);
   const [isInputMode, setInputMode] = useState<boolean>(false);
   const [columnName, setColumnName] = useState<string>("");
+
+  const [editedColumnName, setEditedColumnName] = useState("");
+  const [editingColumnId, setEditingColumnId] = useState<string | null>(null);
 
   const {
     data: fetchedColumns,
@@ -74,6 +78,20 @@ function Board({ boardId }: BoardProps) {
     setColumns([...columns, newColumn]);
   };
 
+  const handleColumnNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEditedColumnName(e.target.value);
+  };
+
+  const handleColumnNameUpdate = async () => {
+    await putAPI(
+      `/api/workspaces/${workspaceId}/boards/${boardId}/columns/${editingColumnId}`,
+      { columnName: editedColumnName }
+    );
+    refetch();
+
+    setEditingColumnId(null);
+  };
+
   // Card 추가 기능
   const addCard = (columnId: string) => {
     const newTitle = prompt("새 카드의 제목을 입력하세요");
@@ -92,14 +110,34 @@ function Board({ boardId }: BoardProps) {
     }
   };
 
-  const onDragEnd = ({ source, destination, type }: DropResult) => {
+  const onDragEnd = async ({ source, destination, type }: DropResult) => {
     if (!destination) return;
 
     if (type === "column") {
       const reorderedColumns = Array.from(columns);
       const [movedColumn] = reorderedColumns.splice(source.index, 1);
       reorderedColumns.splice(destination.index, 0, movedColumn);
+
+      if (
+        destination.index > 0 &&
+        destination.index < reorderedColumns.length - 1
+      ) {
+        const prevOrder = reorderedColumns[destination.index - 1].columnOrder;
+        const nextOrder = reorderedColumns[destination.index + 1].columnOrder;
+        movedColumn.columnOrder = (prevOrder + nextOrder) / 2;
+      } else if (destination.index === 0) {
+        movedColumn.columnOrder = reorderedColumns[1].columnOrder - 1;
+      } else if (destination.index === reorderedColumns.length - 1) {
+        movedColumn.columnOrder =
+          reorderedColumns[reorderedColumns.length - 2].columnOrder + 1;
+      }
+
       setColumns(reorderedColumns);
+
+      await putAPI(
+        `/api/workspaces/${workspaceId}/boards/${boardId}/columns/${movedColumn.columnId}`,
+        { columnOrder: movedColumn.columnOrder }
+      );
       return;
     }
 
@@ -212,9 +250,24 @@ function Board({ boardId }: BoardProps) {
                               ...getColumnStyle(snapshot.isDraggingOver),
                             }}
                           >
-                            <h2 className="text-white mb-2">
-                              {column.columnName}
-                            </h2>
+                            {editingColumnId === column.columnId ? (
+                              <input
+                                autoFocus
+                                value={editedColumnName}
+                                onBlur={handleColumnNameUpdate}
+                                onChange={handleColumnNameChange}
+                              />
+                            ) : (
+                              <h2
+                                className="text-white mb-2"
+                                onClick={() => {
+                                  setEditingColumnId(column.columnId);
+                                  setEditedColumnName(column.columnName);
+                                }}
+                              >
+                                {column.columnName}
+                              </h2>
+                            )}
                             {column.cards?.map((card, index) => (
                               <Draggable
                                 key={card.cardId}
