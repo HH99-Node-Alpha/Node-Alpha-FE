@@ -82,6 +82,14 @@ function Board({ boardId }: BoardProps) {
     setEditedColumnName(e.target.value);
   };
 
+  const handleColumnUpdateOnEnter = (
+    e: React.KeyboardEvent<HTMLInputElement>
+  ) => {
+    if (e.key === "Enter") {
+      handleColumnNameUpdate();
+    }
+  };
+
   const handleColumnNameUpdate = async () => {
     await putAPI(
       `/api/workspaces/${workspaceId}/boards/${boardId}/columns/${editingColumnId}`,
@@ -98,7 +106,7 @@ function Board({ boardId }: BoardProps) {
     if (newTitle) {
       const newCard: TCard = {
         cardId: `${Date.now()}`,
-        cardName: "New Card",
+        cardName: newTitle,
       };
       setColumns(
         columns?.map((column) =>
@@ -246,10 +254,12 @@ function Board({ boardId }: BoardProps) {
                                 value={editedColumnName}
                                 onBlur={handleColumnNameUpdate}
                                 onChange={handleColumnNameChange}
+                                onKeyDown={handleColumnUpdateOnEnter}
+                                className="w-full h-8 px-2 bg-[#22272B] rounded-md mb-2 text-white outline-none"
                               />
                             ) : (
                               <h2
-                                className="text-white mb-2"
+                                className="text-white mb-2 h-8 flex items-center px-2 w-full"
                                 onClick={() => {
                                   setEditingColumnId(column.columnId);
                                   setEditedColumnName(column.columnName);
@@ -270,10 +280,7 @@ function Board({ boardId }: BoardProps) {
                                     {...provided.draggableProps}
                                     {...provided.dragHandleProps}
                                     style={{
-                                      ...getCardStyle(
-                                        snapshot.isDragging,
-                                        provided.draggableProps.style || {}
-                                      ),
+                                      ...getCardStyle(snapshot.isDragging),
                                     }}
                                   >
                                     {card.cardName}
@@ -283,7 +290,7 @@ function Board({ boardId }: BoardProps) {
                             ))}
                             <button
                               onClick={() => addCard(column.columnId)}
-                              className="bg-white p-2 rounded w-full text-black"
+                              className="bg-white py-2 w-[288px] rounded text-black"
                             >
                               +
                             </button>
