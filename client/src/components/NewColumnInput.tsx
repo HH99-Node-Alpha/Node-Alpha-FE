@@ -32,7 +32,7 @@ const NewColumnInput: React.FC<NewColumnInputProps> = ({
         </button>
         <button
           onClick={toggleInputMode}
-          className="px-[14px] py-1 h-full rounded border-black text-black border-2 hover:bg-black hover:text-white"
+          className="px-[14px] py-2 h-full rounded border-black text-black border-2 hover:bg-black hover:text-white"
         >
           X
         </button>
@@ -41,7 +41,7 @@ const NewColumnInput: React.FC<NewColumnInputProps> = ({
   ) : (
     <button
       onClick={toggleInputMode}
-      className="bg-white p-4 w-[320px] h-[40px] flex items-center justify-center rounded text-black"
+      className="bg-white p-4 mt-[2px] w-[320px] h-[40px] flex items-center justify-center rounded text-black"
     >
       +
     </button>
