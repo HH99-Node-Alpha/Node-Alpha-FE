@@ -7,7 +7,10 @@ import {
 } from "react-beautiful-dnd";
 import { BsPersonPlus } from "react-icons/bs";
 import { GiHamburgerMenu } from "react-icons/gi";
-import { TCard, TCardStatus, TColumn } from "../types/dnd";
+import { useQuery } from "react-query";
+import { useParams } from "react-router-dom";
+import { addNewColumnAPI, getColumnsAPI } from "../api/boardAPI";
+import { TCard, TColumn } from "../types/dnd";
 import { getCardStyle, getColumnStyle } from "../utils/dnd";
 import RightSidebar from "./RightSidebar";
 
@@ -16,14 +19,56 @@ type BoardProps = {
 };
 
 function Board({ boardId }: BoardProps) {
+  const { workspaceId } = useParams();
+
   const [columns, setColumns] = useState<TColumn[]>([]);
-  const [rightSidebarOpen, setRightSidebarOpen] = useState(false);
+  const [rightSidebarOpen, setRightSidebarOpen] = useState<boolean>(false);
+  const [isInputMode, setInputMode] = useState<boolean>(false);
+  const [columnName, setColumnName] = useState<string>("");
+
+  const {
+    data: fetchedColumns,
+    refetch,
+    isLoading,
+  } = useQuery(
+    ["columns", workspaceId, boardId],
+    () => getColumnsAPI(workspaceId!, boardId),
+    {
+      enabled: false,
+    }
+  );
+
+  useEffect(() => {
+    refetch().then(() => {
+      if (fetchedColumns) {
+        const sanitizedColumns = fetchedColumns.map((col: any) => ({
+          ...col,
+          cards: Array.isArray(col.cards) ? col.cards : [],
+        }));
+        setColumns(sanitizedColumns);
+      }
+    });
+  }, [workspaceId, boardId, refetch, fetchedColumns]);
+
+  const addNewColumn = async () => {
+    const column = await addNewColumnAPI(workspaceId!, boardId, columnName);
+    if (column) {
+      addColumn(+column.columnId, columnName, column.columnOrder);
+      setInputMode(false);
+      setColumnName("");
+    }
+  };
 
   // Column 추가 기능
-  const addColumn = () => {
+  const addColumn = (
+    columnId: number,
+    columnName: string,
+    columnOrder: number
+  ) => {
     const newColumn = {
-      id: `column-${columns.length + 1}`,
-      title: `Column ${columns.length + 1}`,
+      columnId: `${columnId}`,
+      columnName: columnName,
+      columnOrder: columnOrder,
       cards: [],
     };
     setColumns([...columns, newColumn]);
@@ -34,13 +79,12 @@ function Board({ boardId }: BoardProps) {
     const newTitle = prompt("새 카드의 제목을 입력하세요");
     if (newTitle) {
       const newCard: TCard = {
-        id: `${Date.now()}`,
-        title: "New Card",
-        status: "todo" as TCardStatus,
+        cardId: `${Date.now()}`,
+        cardName: "New Card",
       };
       setColumns(
-        columns.map((column) =>
-          column.id === columnId
+        columns?.map((column) =>
+          column.columnId === columnId
             ? { ...column, cards: [...column.cards, newCard] }
             : column
         )
@@ -60,20 +104,20 @@ function Board({ boardId }: BoardProps) {
     }
 
     const sourceColumn = columns.find(
-      (column) => column.id === source.droppableId
+      (column) => column.columnId === source.droppableId
     );
     const destColumn = columns.find(
-      (column) => column.id === destination.droppableId
+      (column) => column.columnId === destination.droppableId
     );
 
     if (sourceColumn && destColumn) {
-      if (sourceColumn.id === destColumn.id) {
+      if (sourceColumn.columnId === destColumn.columnId) {
         const reorderedCards = Array.from(sourceColumn.cards);
         const [movedCard] = reorderedCards.splice(source.index, 1);
         reorderedCards.splice(destination.index, 0, movedCard);
         setColumns(
-          columns.map((column) =>
-            column.id === sourceColumn.id
+          columns?.map((column) =>
+            column.columnId === sourceColumn.columnId
               ? { ...column, cards: reorderedCards }
               : column
           )
@@ -85,10 +129,10 @@ function Board({ boardId }: BoardProps) {
         destCards.splice(destination.index, 0, movedCard);
 
         setColumns(
-          columns.map((column) =>
-            column.id === sourceColumn.id
+          columns?.map((column) =>
+            column.columnId === sourceColumn.columnId
               ? { ...column, cards: sourceCards }
-              : column.id === destColumn.id
+              : column.columnId === destColumn.columnId
               ? { ...column, cards: destCards }
               : column
           )
@@ -110,6 +154,11 @@ function Board({ boardId }: BoardProps) {
   if (!enabled) {
     return null;
   }
+
+  if (isLoading) {
+    return <div>로딩 중...</div>;
+  }
+
   return (
     <div className="h-full w-full">
       <div className="w-full h-[64px] text-white flex justify-between p-4  gap-8 items-center border-b-2 cursor-pointer">
@@ -135,14 +184,14 @@ function Board({ boardId }: BoardProps) {
         >
           {(provided) => (
             <div
-              className="flex gap-2 px-2 mt-2"
+              className="flex gap-2 p-4"
               ref={provided.innerRef}
               {...provided.droppableProps}
             >
-              {columns.map((column, index) => (
+              {columns?.map((column, index) => (
                 <Draggable
-                  key={column.id}
-                  draggableId={column.id}
+                  key={column.columnId}
+                  draggableId={column.columnId}
                   index={index}
                 >
                   {(provided) => (
@@ -151,7 +200,10 @@ function Board({ boardId }: BoardProps) {
                       {...provided.draggableProps}
                       {...provided.dragHandleProps}
                     >
-                      <Droppable droppableId={column.id} key={column.id}>
+                      <Droppable
+                        droppableId={column.columnId}
+                        key={column.columnId}
+                      >
                         {(provided, snapshot) => (
                           <div
                             ref={provided.innerRef}
@@ -160,11 +212,13 @@ function Board({ boardId }: BoardProps) {
                               ...getColumnStyle(snapshot.isDraggingOver),
                             }}
                           >
-                            <h2 className="text-white mb-2">{column.title}</h2>
-                            {column.cards.map((card, index) => (
+                            <h2 className="text-white mb-2">
+                              {column.columnName}
+                            </h2>
+                            {column.cards?.map((card, index) => (
                               <Draggable
-                                key={card.id}
-                                draggableId={card.id}
+                                key={card.cardId}
+                                draggableId={card.cardId}
                                 index={index}
                               >
                                 {(provided, snapshot) => (
@@ -179,13 +233,13 @@ function Board({ boardId }: BoardProps) {
                                       ),
                                     }}
                                   >
-                                    {card.title}
+                                    {card.cardName}
                                   </div>
                                 )}
                               </Draggable>
                             ))}
                             <button
-                              onClick={() => addCard(column.id)}
+                              onClick={() => addCard(column.columnId)}
                               className="bg-white p-2 rounded w-full text-black"
                             >
                               +
@@ -198,12 +252,37 @@ function Board({ boardId }: BoardProps) {
                   )}
                 </Draggable>
               ))}
-              <button
-                onClick={addColumn}
-                className="bg-white p-4 w-[320px] h-[40px] flex items-center justify-center rounded text-black "
-              >
-                +
-              </button>
+              {isInputMode ? (
+                <div className="bg-white p-4 w-[320px] h-auto flex flex-col justify-between rounded text-black">
+                  <input
+                    value={columnName}
+                    onChange={(e) => setColumnName(e.target.value)}
+                    className="p-2 border-2 border-black rounded-md"
+                    placeholder="Column이름을 입력해주세요."
+                  />
+                  <div className="flex justify-between items-end mt-2">
+                    <button
+                      onClick={addNewColumn}
+                      className="bg-blue-500 text-white p-2 rounded h-full"
+                    >
+                      Add column
+                    </button>
+                    <button
+                      onClick={() => setInputMode(false)}
+                      className="px-[14px] py-1 h-full rounded border-black text-black border-2 hover:bg-black hover:text-white"
+                    >
+                      X
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <button
+                  onClick={() => setInputMode(true)}
+                  className="bg-white p-4 w-[320px] h-[40px] flex items-center justify-center rounded text-black"
+                >
+                  +
+                </button>
+              )}
               {provided.placeholder}
             </div>
           )}

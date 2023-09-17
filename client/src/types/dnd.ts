@@ -1,13 +1,11 @@
-export type TCardStatus = "todo" | "doing";
-
-export type TCard = {
-  id: string;
-  status: TCardStatus;
-  title: string;
+export type TColumn = {
+  columnId: string;
+  columnName: string;
+  columnOrder: number;
+  cards: TCard[];
 };
 
-export type TColumn = {
-  id: string;
-  title: string;
-  cards: TCard[];
+export type TCard = {
+  cardId: string;
+  cardName: string;
 };
