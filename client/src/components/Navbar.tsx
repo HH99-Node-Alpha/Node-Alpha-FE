@@ -2,11 +2,11 @@ import { useState } from "react";
 import { GoBell } from "react-icons/go";
 import { useNavigate } from "react-router-dom";
 import { postAPI } from "../axios";
+import useModal from "../hooks/useModal";
 
 function Navbar() {
   const navigate = useNavigate();
-
-  const [showModal, setShowModal] = useState(false);
+  const { isOpen, modalRef, openModal, closeModal } = useModal();
   const [selectedType, setSelectedType] = useState<
     "workspace" | "board" | null
   >(null);
@@ -31,12 +31,15 @@ function Navbar() {
           </div>
           <button
             className="flex h-full justify-center items-center bg-blue-300 px-4 rounded-lg text-black hover:text-white relative"
-            onClick={() => setShowModal(true)}
+            onClick={openModal}
           >
             Create
           </button>
-          {showModal && (
-            <div className="absolute top-16 left-[220px] flex z-20">
+          {isOpen && (
+            <div
+              ref={modalRef}
+              className="absolute top-16 left-[220px] flex z-20"
+            >
               <div className="flex flex-col w-[240px] h-[100px] bg-white p-4 rounded shadow-lg justify-center items-center">
                 {!selectedType ? (
                   <>
@@ -85,14 +88,14 @@ function Navbar() {
                           }
                           setName("");
                           setSelectedType(null);
-                          setShowModal(false);
+                          closeModal();
                         }}
                       >
                         Create
                       </button>
                       <button
                         onClick={() => {
-                          setShowModal(false);
+                          closeModal();
                           setSelectedType(null);
                           setName("");
                         }}
