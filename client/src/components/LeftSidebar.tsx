@@ -1,6 +1,33 @@
 import { BsPerson } from "react-icons/bs";
+import { useQuery } from "react-query";
+import { useNavigate } from "react-router-dom";
+import { getAPI } from "../axios";
 
-function LeftSidebar() {
+interface Board {
+  boardId: number;
+  boardName: string;
+}
+
+function LeftSidebar({ workspaceId }: { workspaceId: string }) {
+  const navigate = useNavigate();
+
+  const fetchBoards = async () => {
+    const response = await getAPI(`/api/workspaces/${workspaceId}/boards`);
+    if (response.status !== 200) {
+      throw new Error("Failed to fetch boards");
+    }
+    return response.data;
+  };
+
+  const { data: boards = [], isLoading } = useQuery<Board[], Error>(
+    ["boards", workspaceId],
+    fetchBoards
+  );
+
+  if (isLoading) {
+    return <div>로딩중...</div>;
+  }
+
   return (
     <>
       <div className="h-full min-w-[320px] bg-[#161A1E]">
@@ -25,6 +52,19 @@ function LeftSidebar() {
           </div>
           <div className="flex h-full items-center">+</div>
         </button>
+        <div>
+          {boards?.map((board) => (
+            <button
+              key={board.boardId}
+              className="w-full h-10 flex justify-between p-4 text-white hover:bg-[#2C3238] items-center"
+              onClick={() =>
+                navigate(`/workspaces/${workspaceId}/boards/${board.boardId}`)
+              }
+            >
+              {board.boardName}
+            </button>
+          ))}
+        </div>
       </div>
     </>
   );
