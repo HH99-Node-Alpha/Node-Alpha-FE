@@ -16,7 +16,7 @@ const NewColumnInput: React.FC<NewColumnInputProps> = ({
   toggleInputMode,
 }) => {
   return isInputMode ? (
-    <div className="bg-white p-4 w-[320px] h-auto flex flex-col justify-between rounded text-black">
+    <div className="bg-white p-4 w-[320px] h-[132px] flex flex-col justify-between rounded text-black">
       <input
         value={columnName}
         onChange={(e) => setColumnName(e.target.value)}
