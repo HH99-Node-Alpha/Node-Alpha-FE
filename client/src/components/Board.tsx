@@ -13,6 +13,7 @@ import {
   getOneBoardAPI,
 } from "../api/boardAPI";
 import { putAPI } from "../axios";
+import { io, Socket } from "socket.io-client";
 import { TCard, TColumn } from "../types/dnd";
 import { getCardStyle, getColumnStyle } from "../utils/dnd";
 import BoardHeader from "./BoardHeader";
@@ -30,9 +31,41 @@ function Board({ boardId }: BoardProps) {
   const [rightSidebarOpen, setRightSidebarOpen] = useState<boolean>(false);
   const [isInputMode, setInputMode] = useState<boolean>(false);
   const [columnName, setColumnName] = useState<string>("");
+  const [socket, setSocket] = useState<Socket | null>(null);
 
   const [editedColumnName, setEditedColumnName] = useState("");
   const [editingColumnId, setEditingColumnId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const newSocket = io(`${process.env.REACT_APP_SERVER_URL!}/board`, {
+      path: "/socket.io",
+    });
+    newSocket.emit("join", boardId);
+    setSocket(newSocket);
+
+    return () => {
+      newSocket.disconnect();
+    };
+  }, [boardId]);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    socket.on("updateColumnOrder", ({ columnId, columnOrder }) => {
+      setColumns((prevColumns) => {
+        return prevColumns.map((column) => {
+          if (column.columnId === columnId) {
+            return { ...column, columnOrder };
+          }
+          return column;
+        });
+      });
+    });
+
+    return () => {
+      socket.off("updateColumnOrder");
+    };
+  }, [socket]);
 
   const {
     data: fetchedColumns,
@@ -151,6 +184,13 @@ function Board({ boardId }: BoardProps) {
       }
 
       setColumns(reorderedColumns);
+
+      if (socket) {
+        socket.emit("ColumnToServer", {
+          columnId: movedColumn.columnId,
+          columnOrder: movedColumn.columnOrder,
+        });
+      }
 
       await putAPI(
         `/api/workspaces/${workspaceId}/boards/${boardId}/columns/${movedColumn.columnId}`,
