@@ -9,8 +9,8 @@ function Router() {
     <BrowserRouter>
       <Routes>
         <Route path="/signup" element={<SignUp />} />
-        <Route path="/signin" element={<SignIn />} />
-        <Route path="/" element={<Main />} />
+        <Route path="/" element={<SignIn />} />
+        <Route path="/main" element={<Main />} />
         <Route
           path="/workspaces/:workspaceId/boards/:boardId"
           element={<Workspace />}
