@@ -14,7 +14,7 @@ function Navbar() {
 
   return (
     <>
-      <nav className="w-full h-16 py-3 pl-2 flex justify-between bg-[#1D2125] z-10 ">
+      <nav className="w-full h-16 py-3 pl-1 pr-4 flex justify-between bg-[#1D2125] z-10 ">
         <div className="flex gap-8 cursor-pointer">
           <div
             onClick={() => navigate("/")}
