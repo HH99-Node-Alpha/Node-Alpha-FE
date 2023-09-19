@@ -13,6 +13,12 @@ type Workspace = {
 type Board = {
   boardId: number;
   boardName: string;
+  Color?: {
+    backgroundUrl?: string;
+    colorId?: number;
+    startColor?: string;
+    endColor?: string;
+  };
 };
 
 type SectionProps = {
@@ -22,6 +28,13 @@ type SectionProps = {
     name: string;
     workspaceId?: number;
     boardId?: number;
+    boards?: Board[];
+    color?: {
+      backgroundUrl?: string;
+      colorId?: number;
+      startColor?: string;
+      endColor?: string;
+    };
   }[];
 };
 
@@ -29,11 +42,15 @@ type MainCardProps = {
   name: string;
   workspaceId?: number;
   boardId?: number;
+  color?: {
+    backgroundUrl?: string;
+    startColor?: string;
+    endColor?: string;
+  };
 };
 
 const fetchUserData = async () => {
   const response = await getAPI("/api/users");
-  console.log(response.data);
   return response.data;
 };
 
@@ -41,16 +58,8 @@ function Main() {
   const { data, isLoading, isError } = useQuery("userData", fetchUserData);
 
   const workspaces: Workspace[] = data || [];
-  const boards: Board[] =
-    data?.reduce(
-      (acc: Board[], workspace: Workspace) =>
-        acc.concat(workspace.Boards || []),
-      []
-    ) || [];
-
   if (isLoading) return <p>로딩중..</p>;
   if (isError) return <p>서버 에러</p>;
-
   return (
     <Wrapper>
       <Navbar />
@@ -60,30 +69,12 @@ function Main() {
             하이!
           </h1>
           <Section
-            title="Recent visited"
-            items={workspaces.slice(0, 7).map((workspace: Workspace) => ({
-              id: workspace.workspaceId,
-              name: workspace.workspaceName,
-              workspaceId: workspace.workspaceId,
-              boardId: workspace.Boards[0]?.boardId,
-            }))}
-          />
-          <Section
             title="My Workspaces"
-            items={workspaces.map((workspace: any) => ({
+            items={workspaces.map((workspace: Workspace) => ({
               id: workspace.workspaceId,
               name: workspace.workspaceName,
               workspaceId: workspace.workspaceId,
-              boardId: workspace.Boards[0]?.boardId,
-            }))}
-          />
-          <Section
-            title="My Boards"
-            items={boards.map((board: any) => ({
-              id: board.boardId,
-              name: board.boardName,
-              workspaceId: data[0].workspaceId,
-              boardId: board.boardId,
+              boards: workspace.Boards,
             }))}
           />
         </div>
@@ -94,27 +85,34 @@ function Main() {
 
 function Section({ title, items }: SectionProps) {
   return (
-    <div className="w-full flex-1">
+    <div className="w-full">
       <div className="w-full h-10 flex items-center p-4 text-white mt-2 text-2xl text-bold mb-2">
         {title}
       </div>
-      <div className="w-full h-full px-4 grid grid-cols-6 grid-rows-2 gap-x-6 gap-y-2 items-center">
-        {items?.map((item) => (
-          <MainCard
-            key={item.id}
-            name={item.name}
-            workspaceId={item.workspaceId}
-            boardId={item.boardId}
-          />
-        ))}
-      </div>
+      {items?.map((item) => (
+        <div className="w-full my-2">
+          <div className="w-full flex items-center h-6 mb-2 mx-4 text-xl text-white">
+            {item.name}
+          </div>
+          <div className="w-full h-full px-4 grid grid-cols-6 gap-x-6 gap-y-2 items-center text-sm">
+            {item.boards?.map((board: Board) => (
+              <MainCard
+                key={board.boardId}
+                name={board.boardName}
+                workspaceId={item.workspaceId}
+                boardId={board.boardId}
+                color={board.Color}
+              />
+            ))}
+          </div>
+        </div>
+      ))}
     </div>
   );
 }
 
-function MainCard({ name, workspaceId, boardId }: MainCardProps) {
+function MainCard({ name, workspaceId, boardId, color }: MainCardProps) {
   const navigate = useNavigate();
-
   const handleCardClick = () => {
     if (workspaceId && boardId) {
       navigate(`/workspaces/${workspaceId}/boards/${boardId}`);
@@ -122,13 +120,38 @@ function MainCard({ name, workspaceId, boardId }: MainCardProps) {
       navigate(`/workspaces/${workspaceId}/boards/1`);
     }
   };
+  let backgroundStyle = {};
+  if (color?.backgroundUrl) {
+    if (color?.backgroundUrl) {
+      backgroundStyle = {
+        backgroundImage: `url(${color.backgroundUrl})`,
+        backgroundSize: "cover",
+        backgroundRepeat: "no-repeat",
+        backgroundPosition: "center center",
+      };
+    }
+  } else if (color?.startColor) {
+    backgroundStyle = {
+      backgroundImage: color.startColor,
+    };
+  } else if (color?.endColor) {
+    backgroundStyle = {
+      backgroundImage: color.endColor,
+    };
+  }
 
   return (
     <div onClick={handleCardClick}>
-      <div className="w-40 h-20 bg-rose-400 rounded-md"></div>
+      <div style={backgroundStyle} className="w-20 h-12 rounded-md"></div>
       <div className="text-white mt-2 mx-1">{name}</div>
     </div>
   );
 }
 
 export default Main;
+
+// const StyledDiv = styled.div`
+//   background-image: ${(props) => props.gradient};
+//   width: 100%;
+//   height: 100%;
+// `;
