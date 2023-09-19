@@ -55,12 +55,14 @@ function Board({ boardId }: BoardProps) {
 
     socket.on("updateColumnOrder", ({ columnId, columnOrder }) => {
       setColumns((prevColumns) => {
-        return prevColumns.map((column) => {
+        const updatedColumns = prevColumns.map((column) => {
           if (column.columnId === columnId) {
             return { ...column, columnOrder };
           }
           return column;
         });
+
+        return updatedColumns.sort((a, b) => a.columnOrder - b.columnOrder);
       });
     });
 
