@@ -3,6 +3,8 @@ import Wrapper from "../components/Wrapper";
 import Navbar from "../components/Navbar";
 import { getAPI } from "../axios";
 import { useNavigate } from "react-router-dom";
+import { useRecoilState } from "recoil";
+import { userInfoState } from "../states/userInfoState";
 
 type Workspace = {
   Boards: Board[];
@@ -55,11 +57,17 @@ const fetchUserData = async () => {
 };
 
 function Main() {
-  const { data, isLoading, isError } = useQuery("userData", fetchUserData);
-
+  const [, setUserWorkspacesBoards] = useRecoilState(userInfoState);
+  const { data, isLoading, isError } = useQuery("userData", fetchUserData, {
+    onSuccess: (data) => {
+      setUserWorkspacesBoards(data);
+    },
+  });
   const workspaces: Workspace[] = data || [];
+
   if (isLoading) return <p>로딩중..</p>;
   if (isError) return <p>서버 에러</p>;
+
   return (
     <Wrapper>
       <Navbar />
