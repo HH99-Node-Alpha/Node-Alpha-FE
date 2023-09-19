@@ -277,7 +277,6 @@ function Board({ boardId }: BoardProps) {
       backgroundImage: Color.endColor,
     };
   }
-  console.log(backgroundStyle);
   return (
     <div className="h-full w-full" style={backgroundStyle}>
       <BoardHeader
