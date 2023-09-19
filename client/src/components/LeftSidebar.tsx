@@ -1,32 +1,40 @@
 import { BsPerson } from "react-icons/bs";
-import { useQuery } from "react-query";
 import { useNavigate } from "react-router-dom";
-import { getAPI } from "../axios";
+import { useRecoilValue } from "recoil";
+
+import { userInfoState } from "../states/userInfoState";
+
+interface Color {
+  backgroundUrl?: string;
+  colorId: number;
+  endColor?: string | null;
+  startColor?: string | null;
+}
 
 interface Board {
   boardId: number;
   boardName: string;
+  Color: Color;
 }
+
+interface Workspace {
+  workspaceId: number;
+  workspaceName: string;
+  Boards: Board[];
+}
+
+type UserWorkspacesBoardSpaces = Workspace[];
 
 function LeftSidebar({ workspaceId }: { workspaceId: string }) {
   const navigate = useNavigate();
+  const userWorkspacesBoardSpaces: UserWorkspacesBoardSpaces =
+    useRecoilValue(userInfoState);
 
-  const fetchBoards = async () => {
-    const response = await getAPI(`/api/workspaces/${workspaceId}/boards`);
-    if (response.status !== 200) {
-      throw new Error("Failed to fetch boards");
-    }
-    return response.data;
-  };
-
-  const { data: boards = [], isLoading } = useQuery<Board[], Error>(
-    ["boards", workspaceId],
-    fetchBoards
+  const workspace = userWorkspacesBoardSpaces.find(
+    (item) => item.workspaceId === Number(workspaceId)
   );
 
-  if (isLoading) {
-    return <div>로딩중...</div>;
-  }
+  const boards = workspace?.Boards;
 
   return (
     <>
@@ -53,7 +61,7 @@ function LeftSidebar({ workspaceId }: { workspaceId: string }) {
           <div className="flex h-full items-center">+</div>
         </button>
         <div>
-          {boards?.map((board) => (
+          {boards?.map((board: Board) => (
             <button
               key={board.boardId}
               className="w-full h-10 flex justify-between p-4 text-white hover:bg-[#2C3238] items-center"
