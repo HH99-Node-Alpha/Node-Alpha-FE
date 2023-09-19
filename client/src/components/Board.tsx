@@ -86,7 +86,6 @@ function Board({ boardId }: BoardProps) {
     () => getOneBoardAPI(workspaceId!, boardId),
     { enabled: true }
   );
-
   useEffect(() => {
     refetch().then(() => {
       if (fetchedColumns) {
@@ -257,8 +256,28 @@ function Board({ boardId }: BoardProps) {
     return <div>로딩 중...</div>;
   }
 
+  const { Color } = board || {};
+
+  let backgroundStyle = {};
+  if (Color?.backgroundUrl) {
+    backgroundStyle = {
+      backgroundImage: `url(${Color.backgroundUrl})`,
+      backgroundSize: "cover",
+      backgroundRepeat: "no-repeat",
+      backgroundPosition: "center center",
+    };
+  } else if (Color?.startColor) {
+    backgroundStyle = {
+      backgroundImage: Color.startColor,
+    };
+  } else if (Color?.endColor) {
+    backgroundStyle = {
+      backgroundImage: Color.endColor,
+    };
+  }
+  console.log(backgroundStyle);
   return (
-    <div className="h-full w-full">
+    <div className="h-full w-full" style={backgroundStyle}>
       <BoardHeader
         boardName={board?.boardName}
         toggleSidebar={() => setRightSidebarOpen(!rightSidebarOpen)}
