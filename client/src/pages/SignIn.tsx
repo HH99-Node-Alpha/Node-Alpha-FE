@@ -22,9 +22,7 @@ const SignIn: FC = () => {
 
   const handleSubmit = async () => {
     try {
-      console.log(signinRequest);
-      const response = await postAPI("/api/login", signinRequest);
-      console.log(response.data);
+      await postAPI("/api/login", signinRequest);
       navigate("/main");
     } catch (error: any) {
       console.error("Signin error:", error.response?.data || error.message);

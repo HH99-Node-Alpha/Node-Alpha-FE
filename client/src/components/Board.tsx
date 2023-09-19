@@ -31,11 +31,13 @@ function Board({ boardId }: BoardProps) {
   const [rightSidebarOpen, setRightSidebarOpen] = useState<boolean>(false);
   const [isInputMode, setInputMode] = useState<boolean>(false);
   const [columnName, setColumnName] = useState<string>("");
+
   const [socket, setSocket] = useState<Socket | null>(null);
 
   const [editedColumnName, setEditedColumnName] = useState("");
   const [editingColumnId, setEditingColumnId] = useState<string | null>(null);
 
+  // socket연결
   useEffect(() => {
     const newSocket = io(`${process.env.REACT_APP_SERVER_URL!}/board`, {
       path: "/socket.io",

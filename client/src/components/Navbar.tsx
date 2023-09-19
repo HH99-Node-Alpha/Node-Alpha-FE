@@ -17,7 +17,7 @@ function Navbar() {
       <nav className="w-full h-16 py-3 pl-1 pr-4 flex justify-between bg-[#1D2125] z-10 ">
         <div className="flex gap-8 cursor-pointer">
           <div
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/main")}
             className="flex h-full justify-center items-center text-white"
           >
             <img
@@ -73,18 +73,13 @@ function Navbar() {
                       <button
                         onClick={async () => {
                           if (selectedType === "workspace") {
-                            const result = await postAPI("/api/workspaces", {
+                            await postAPI("/api/workspaces", {
                               workspaceName: name,
                             });
-                            console.log(result);
                           } else {
-                            const result = await postAPI(
-                              "/api/workspaces/1/boards",
-                              {
-                                boardName: name,
-                              }
-                            );
-                            console.log(result);
+                            await postAPI("/api/workspaces/1/boards", {
+                              boardName: name,
+                            });
                           }
                           setName("");
                           setSelectedType(null);

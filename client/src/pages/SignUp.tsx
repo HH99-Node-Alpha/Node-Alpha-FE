@@ -26,9 +26,7 @@ const SignUp: FC = () => {
 
   const handleSubmit = async () => {
     try {
-      console.log(signupRequest);
-      const response = await postAPI("/api/signup", signupRequest);
-      console.log(response.data);
+      await postAPI("/api/signup", signupRequest);
       navigate("/");
     } catch (error: any) {
       console.error("Signup error:", error.response?.data || error.message);
