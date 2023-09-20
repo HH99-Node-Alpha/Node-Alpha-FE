@@ -1,6 +1,7 @@
 import { atom } from "recoil";
+import { WorkspaceType } from "../types/WorkspacesBoards";
 
-export const userInfoState = atom({
-  key: "userInfoState",
+export const userInfoState = atom<WorkspaceType[]>({
+  key: "userWorkspacesBoardsState",
   default: [],
 });

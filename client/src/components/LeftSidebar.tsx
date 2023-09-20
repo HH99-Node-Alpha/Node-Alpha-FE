@@ -3,27 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 
 import { userInfoState } from "../states/userInfoState";
-
-interface Color {
-  backgroundUrl?: string;
-  colorId: number;
-  endColor?: string | null;
-  startColor?: string | null;
-}
-
-interface Board {
-  boardId: number;
-  boardName: string;
-  Color: Color;
-}
-
-interface Workspace {
-  workspaceId: number;
-  workspaceName: string;
-  Boards: Board[];
-}
-
-type UserWorkspacesBoardSpaces = Workspace[];
+import {
+  BoardType,
+  UserWorkspacesBoardSpaces,
+} from "../types/WorkspacesBoards";
 
 function LeftSidebar({ workspaceId }: { workspaceId: string }) {
   const navigate = useNavigate();
@@ -61,7 +44,7 @@ function LeftSidebar({ workspaceId }: { workspaceId: string }) {
           <div className="flex h-full items-center">+</div>
         </button>
         <div>
-          {boards?.map((board: Board) => (
+          {boards?.map((board: BoardType) => (
             <button
               key={board.boardId}
               className="w-full h-10 flex justify-between p-4 text-white hover:bg-[#2C3238] items-center"
