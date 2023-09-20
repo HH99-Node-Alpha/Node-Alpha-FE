@@ -20,6 +20,11 @@ const NewColumnInput: React.FC<NewColumnInputProps> = ({
       <input
         value={columnName}
         onChange={(e) => setColumnName(e.target.value)}
+        onKeyPress={(e) => {
+          if (e.key === "Enter") {
+            addNewColumn();
+          }
+        }}
         className="p-2 border-2 border-black rounded-md"
         placeholder="Column이름을 입력해주세요."
       />

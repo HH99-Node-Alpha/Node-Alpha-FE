@@ -20,7 +20,12 @@ const SignIn: FC = () => {
     setSignupRequest((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (
+    event:
+      | React.FormEvent<HTMLFormElement>
+      | React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    event.preventDefault();
     try {
       await postAPI("/api/login", signinRequest);
       navigate("/main");
@@ -43,49 +48,51 @@ const SignIn: FC = () => {
             <div className="w-[320px] cursor-default text-[18px] mb-4 text-white h-20 h- flex justify-center items-center">
               Login to Alpha
             </div>
-            <SignupInput
-              label="이메일"
-              placeholder="이메일을 입력해주세요"
-              type="text"
-              onChange={(e) => handleChange(e)}
-              name="email"
-            />
-            <SignupInput
-              label="비밀번호"
-              placeholder="비밀번호를 입력해주세요"
-              type="password"
-              onChange={(e) => handleChange(e)}
-              name="password"
-            />
-            <div className="w-[320px] justify-end px-1 flex items-center gap-2 text-white text-[12px]">
-              <div className="cursor-default">아직 아이디가 없으신가요?</div>
-              <div
-                className="cursor-pointer"
-                onClick={() => navigate("/signup")}
-              >
-                회원가입 하기
+            <form onSubmit={handleSubmit}>
+              <SignupInput
+                label="이메일"
+                placeholder="이메일을 입력해주세요"
+                type="text"
+                onChange={(e) => handleChange(e)}
+                name="email"
+              />
+              <SignupInput
+                label="비밀번호"
+                placeholder="비밀번호를 입력해주세요"
+                type="password"
+                onChange={(e) => handleChange(e)}
+                name="password"
+              />
+              <div className="w-[320px] justify-end px-1 flex items-center gap-2 text-white text-[12px]">
+                <div className="cursor-default">아직 아이디가 없으신가요?</div>
+                <div
+                  className="cursor-pointer"
+                  onClick={() => navigate("/signup")}
+                >
+                  회원가입 하기
+                </div>
               </div>
-            </div>
-            <div className="flex flex-col mt-6 gap-4">
-              <button
-                className="w-[320px] h-10 rounded-md text-black bg-white"
-                onClick={handleSubmit}
-              >
-                로그인
-              </button>
-              <button
-                className="w-[320px] h-10 rounded-md text-black bg-white"
-                onClick={handleSubmit}
-              >
-                구글 로그인
-              </button>
-              <button
-                className="w-[320px] h-10 rounded-md text-black bg-[#FFDD1D]"
-                onClick={handleSubmit}
-              >
-                카카오 로그인
-              </button>
-            </div>
+              <div className="flex flex-col mt-6 gap-4">
+                <button
+                  className="w-[320px] h-10 rounded-md text-black bg-white"
+                  onClick={handleSubmit}
+                >
+                  로그인
+                </button>
+                <button
+                  className="w-[320px] h-10 rounded-md text-black bg-white"
+                  onClick={handleSubmit}
+                >
+                  구글 로그인
+                </button>
+                <button
+                  className="w-[320px] h-10 rounded-md text-black bg-[#FFDD1D]"
+                  onClick={handleSubmit}
+                >
+                  카카오 로그인
+                </button>
+              </div>
+            </form>
           </body>
           <footer className="w-full flex flex-col justify-center items-center">
             <div className="w-full mt-10 cursor-default text-white mb-10 flex justify-center items-center">
