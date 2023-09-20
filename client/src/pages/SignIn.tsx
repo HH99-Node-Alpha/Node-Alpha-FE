@@ -44,7 +44,7 @@ const SignIn: FC = () => {
           <header className="w-full cursor-default text-[24px] text-white h-1/6 flex justify-center items-center">
             Alpha
           </header>
-          <body className="w-full h-3/6 flex flex-col gap-2 mb-6 items-center">
+          <div className="w-full h-3/6 flex flex-col gap-2 mb-6 items-center">
             <div className="w-[320px] cursor-default text-[18px] mb-4 text-white h-20 h- flex justify-center items-center">
               Login to Alpha
             </div>
@@ -93,7 +93,7 @@ const SignIn: FC = () => {
                 </button>
               </div>
             </form>
-          </body>
+          </div>
           <footer className="w-full flex flex-col justify-center items-center">
             <div className="w-full mt-10 cursor-default text-white mb-10 flex justify-center items-center">
               Alpha

@@ -98,7 +98,7 @@ function Section({ title, items }: SectionProps) {
         {title}
       </div>
       {items?.map((item) => (
-        <div className="w-full my-2">
+        <div className="w-full my-2" key={item.id}>
           <div className="w-full flex items-center h-6 mb-2 mx-4 text-xl text-white">
             {item.name}
           </div>
@@ -157,9 +157,3 @@ function MainCard({ name, workspaceId, boardId, color }: MainCardProps) {
 }
 
 export default Main;
-
-// const StyledDiv = styled.div`
-//   background-image: ${(props) => props.gradient};
-//   width: 100%;
-//   height: 100%;
-// `;

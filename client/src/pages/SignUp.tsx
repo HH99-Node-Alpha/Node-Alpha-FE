@@ -43,7 +43,7 @@ const SignUp: FC = () => {
           <header className="w-full text-[24px] text-white h-1/6 flex justify-center items-center">
             Alpha
           </header>
-          <body className="w-full h-3/6 flex flex-col gap-2 mb-6 items-center">
+          <div className="w-full h-3/6 flex flex-col gap-2 mb-6 items-center">
             <div className="w-[320px] text-[18px] text-white h-20 h- flex justify-center items-center">
               Signup to Alpha
             </div>
@@ -81,7 +81,7 @@ const SignUp: FC = () => {
             >
               Continue
             </button>
-          </body>
+          </div>
           <footer className="w-full flex flex-col justify-center items-center">
             <div className="w-full mt-10 cursor-default text-white mb-10 flex justify-center items-center">
               Alpha
