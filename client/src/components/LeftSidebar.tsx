@@ -8,7 +8,13 @@ import {
   UserWorkspacesBoardSpaces,
 } from "../types/WorkspacesBoards";
 
-function LeftSidebar({ workspaceId }: { workspaceId: string }) {
+function LeftSidebar({
+  workspaceId,
+  openUserSearchModal,
+}: {
+  workspaceId: string;
+  openUserSearchModal: () => void;
+}) {
   const navigate = useNavigate();
   const userWorkspacesBoardSpaces: UserWorkspacesBoardSpaces =
     useRecoilValue(userInfoState);
@@ -30,7 +36,10 @@ function LeftSidebar({ workspaceId }: { workspaceId: string }) {
           />
           <div className="text-white">Alpha's Workspace</div>
         </div>
-        <button className="w-full h-10 flex justify-between p-4 text-white hover:bg-[#2C3238]">
+        <button
+          onClick={openUserSearchModal}
+          className="w-full h-10 flex justify-between p-4 text-white hover:bg-[#2C3238]"
+        >
           <div className="flex h-full gap-4 items-center">
             <BsPerson />
             <span>Members</span>

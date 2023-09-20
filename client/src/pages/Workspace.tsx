@@ -11,6 +11,7 @@ import { getAPI, putAPI } from "../axios";
 import { BoardType, ColorType, WorkspaceType } from "../types/WorkspacesBoards";
 import ChangeBoardColorModal from "../components/ChangeBoardColorModal";
 import { useQuery } from "react-query";
+import { BsSearch } from "react-icons/bs";
 
 function Workspace() {
   const { workspaceId, boardId } = useParams();
@@ -20,6 +21,37 @@ function Workspace() {
     closeModal,
     openModal,
   } = useModal();
+  const {
+    isOpen: isUserSearchModalOpen,
+    modalRef: userSearchModalRef,
+    openModal: openUserSearchModal,
+    closeModal: closeUserSearchModal,
+  } = useModal();
+
+  const UserSearchModal = () => {
+    return (
+      <div
+        className="fixed top-0 left-0 w-full h-full flex items-center justify-center z-60"
+        style={{ backgroundColor: "rgba(0, 0, 0, 0.7)" }}
+      >
+        <div
+          className="w-[300px] h-[600px] bg-white rounded-md"
+          ref={userSearchModalRef}
+        >
+          <div className="flex justify-between px-3 mt-2">
+            <div>회원 검색</div>
+            <button onClick={closeUserSearchModal}>X</button>
+          </div>
+          <div className="flex justify-between px-2 gap-4 mt-3 items-center">
+            <input className="w-full h-8 border-2 rounded-md border-black" />
+            <button>
+              <BsSearch />
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   const [selectedBackground, setSelectedBackground] =
     useState<ColorType | null>(null);
@@ -143,9 +175,13 @@ function Workspace() {
     <Wrapper>
       <Navbar />
       <div className="flex w-full h-full overflow-auto">
-        <LeftSidebar workspaceId={workspaceId!} />
+        <LeftSidebar
+          workspaceId={workspaceId!}
+          openUserSearchModal={openUserSearchModal}
+        />
         <Board boardId={boardId!} openModal={openModal} />
       </div>
+      {isUserSearchModalOpen && <UserSearchModal />}
 
       <ChangeBoardColorModal
         isColorModalOpen={isColorModalOpen}
