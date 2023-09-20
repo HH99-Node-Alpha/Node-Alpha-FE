@@ -70,7 +70,7 @@ function Main() {
 
   return (
     <Wrapper>
-      <Navbar />
+      <Navbar page="main" />
       <div className="flex w-full h-full overflow-auto justify-center items-center">
         <div className=" w-7/12 h-5/6 bg-[#1D2125] rounded-lg flex flex-col items-center overflow-auto">
           <h1 className="w-full h-16 py-2 border-b-2 border-white flex items-center text-white px-4 ">

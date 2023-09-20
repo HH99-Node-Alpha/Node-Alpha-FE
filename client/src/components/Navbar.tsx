@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { postAPI } from "../axios";
 import useModal from "../hooks/useModal";
 
-function Navbar() {
+function Navbar({ page }: { page?: string }) {
   const navigate = useNavigate();
   const { isOpen, modalRef, openModal, closeModal } = useModal();
   const [selectedType, setSelectedType] = useState<
@@ -40,7 +40,7 @@ function Navbar() {
               ref={modalRef}
               className="absolute top-16 left-[220px] flex z-20"
             >
-              <div className="flex flex-col w-[240px] h-[100px] bg-white p-4 rounded shadow-lg justify-center items-center">
+              <div className="flex flex-col w-[240px] h-auto bg-white p-4 rounded shadow-lg justify-center items-center">
                 {!selectedType ? (
                   <>
                     <button
@@ -49,12 +49,14 @@ function Navbar() {
                     >
                       Create Workspace
                     </button>
-                    <button
-                      className="w-full hover:bg-black hover:text-white rounded-md p-2"
-                      onClick={() => setSelectedType("board")}
-                    >
-                      Create Board
-                    </button>
+                    {page !== "main" && (
+                      <button
+                        className="w-full hover:bg-black hover:text-white rounded-md p-2"
+                        onClick={() => setSelectedType("board")}
+                      >
+                        Create Board
+                      </button>
+                    )}
                   </>
                 ) : (
                   <>
