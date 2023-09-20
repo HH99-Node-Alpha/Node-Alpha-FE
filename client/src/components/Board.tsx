@@ -7,11 +7,7 @@ import {
 } from "react-beautiful-dnd";
 import { useQuery } from "react-query";
 import { useParams } from "react-router-dom";
-import {
-  addNewColumnAPI,
-  getColumnsAPI,
-  getOneBoardAPI,
-} from "../api/boardAPI";
+import { addNewColumnAPI, getColumnsAPI } from "../api/boardAPI";
 import { putAPI } from "../axios";
 import { io, Socket } from "socket.io-client";
 import { TCard, TColumn } from "../types/dnd";
@@ -19,12 +15,15 @@ import { getCardStyle, getColumnStyle } from "../utils/dnd";
 import BoardHeader from "./BoardHeader";
 import NewColumnInput from "./NewColumnInput";
 import RightSidebar from "./RightSidebar";
+import { useRecoilValue } from "recoil";
+import { userInfoState } from "../states/userInfoState";
 
 type BoardProps = {
   boardId: string;
+  openModal: () => void;
 };
 
-function Board({ boardId }: BoardProps) {
+function Board({ boardId, openModal }: BoardProps) {
   const { workspaceId } = useParams();
 
   const [columns, setColumns] = useState<TColumn[]>([]);
@@ -36,6 +35,19 @@ function Board({ boardId }: BoardProps) {
 
   const [editedColumnName, setEditedColumnName] = useState("");
   const [editingColumnId, setEditingColumnId] = useState<string | null>(null);
+
+  const userWorkspacesBoards = useRecoilValue(userInfoState);
+
+  const findBoardById = (boards: any[], id: string) => {
+    for (const workspace of boards) {
+      const foundBoard = workspace.Boards.find(
+        (board: any) => board.boardId.toString() === id
+      );
+      if (foundBoard) return foundBoard;
+    }
+    return null;
+  };
+  const board = findBoardById(userWorkspacesBoards, boardId);
 
   // socket연결
   useEffect(() => {
@@ -83,11 +95,6 @@ function Board({ boardId }: BoardProps) {
     }
   );
 
-  const { data: board, isLoading: boardIsLoading } = useQuery(
-    ["board", workspaceId, boardId],
-    () => getOneBoardAPI(workspaceId!, boardId),
-    { enabled: true }
-  );
   useEffect(() => {
     refetch().then(() => {
       if (fetchedColumns) {
@@ -254,7 +261,7 @@ function Board({ boardId }: BoardProps) {
     return null;
   }
 
-  if (isLoading || boardIsLoading) {
+  if (isLoading) {
     return <div>로딩 중...</div>;
   }
 
@@ -277,8 +284,9 @@ function Board({ boardId }: BoardProps) {
       backgroundImage: Color.endColor,
     };
   }
+
   return (
-    <div className="h-full w-full" style={backgroundStyle}>
+    <div className="h-full w-full flex flex-col" style={backgroundStyle}>
       <BoardHeader
         boardName={board?.boardName}
         toggleSidebar={() => setRightSidebarOpen(!rightSidebarOpen)}
@@ -393,6 +401,7 @@ function Board({ boardId }: BoardProps) {
         <RightSidebar
           closeSidebar={() => setRightSidebarOpen(false)}
           isOpen={rightSidebarOpen}
+          openModal={openModal}
         />
       )}
     </div>
