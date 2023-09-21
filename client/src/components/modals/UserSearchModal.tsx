@@ -14,7 +14,6 @@ interface UserSearchModalProps {
 const fetchUsers = async (queryKey: any) => {
   const query = queryKey.queryKey[1];
   const result = await getAPI(`/api/users/search?email=${query}&name=${query}`);
-  console.log(result);
   return result.data;
 };
 
@@ -36,12 +35,10 @@ const UserSearchModal: React.FC<UserSearchModalProps> = ({
 
   useEffect(() => {
     if (socket) {
-      console.log(socket);
       socket.on("invite", (data) => {
         console.log(data);
       });
     } else {
-      console.log("소켓없음");
       return;
     }
 
@@ -49,7 +46,6 @@ const UserSearchModal: React.FC<UserSearchModalProps> = ({
       socket.off("invite");
     };
   });
-  console.log(socket);
   const addMember = (invitedByUserId: number) => {
     socket?.emit("invite", {
       invitedUserId: 1,
@@ -88,7 +84,6 @@ const UserSearchModal: React.FC<UserSearchModalProps> = ({
             {data.map((user: any) => (
               <button
                 onClick={() => {
-                  console.log(user);
                   addMember(user.userId);
                 }}
                 key={user.id}
