@@ -20,13 +20,18 @@ jobs:
 
       - name: Create .env.production file
         run: |
+          cd client
           echo 'REACT_APP_SERVER_URL=${{ secrets.REACT_APP_SERVER_URL }}' > .env.production
 
       - name: Install dependencies
-        run: yarn install
+        run: |
+          cd client
+          yarn install
 
       - name: Build project
-        run: yarn run build
+        run: |
+          cd client
+          yarn run build
 
       - name: Deploy to S3
         uses: jakejarvis/s3-sync-action@v0.5.1
@@ -37,4 +42,4 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ap-northeast-2
-          SOURCE_DIR: build
+          SOURCE_DIR: client/build
