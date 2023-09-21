@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { BsSearch } from "react-icons/bs";
 import { useQuery } from "react-query";
 import { Socket } from "socket.io-client";
-import { getAPI } from "../axios";
+import { getAPI } from "../../axios";
 
 interface UserSearchModalProps {
   userSearchModalRef: any;

@@ -1,6 +1,6 @@
 import { useQuery } from "react-query";
 import Wrapper from "../components/Wrapper";
-import Navbar from "../components/Navbar";
+import Navbar from "../components/layouts/Navbar";
 import { getAPI } from "../axios";
 import { useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
@@ -149,7 +149,7 @@ function MainCard({ name, workspaceId, boardId, color }: MainCardProps) {
   }
 
   return (
-    <div onClick={handleCardClick}>
+    <div onClick={handleCardClick} className="cursor-pointer">
       <div style={backgroundStyle} className="w-20 h-12 rounded-md"></div>
       <div className="text-white mt-2 mx-1">{name}</div>
     </div>

@@ -1,17 +1,17 @@
 import { useParams } from "react-router-dom";
 import Board from "../components/Board";
 import Wrapper from "../components/Wrapper";
-import Navbar from "../components/Navbar";
-import LeftSidebar from "../components/LeftSidebar";
+import Navbar from "../components/layouts/Navbar";
+import LeftSidebar from "../components/layouts/LeftSidebar";
 import { useEffect, useState } from "react";
 import useModal from "../hooks/useModal";
 import { useRecoilState } from "recoil";
 import { userInfoState } from "../states/userInfoState";
 import { getAPI, putAPI } from "../axios";
 import { BoardType, ColorType, WorkspaceType } from "../types/WorkspacesBoards";
-import ChangeBoardColorModal from "../components/ChangeBoardColorModal";
+import ChangeBoardColorModal from "../components/modals/ChangeBoardColorModal";
 import { useQuery } from "react-query";
-import UserSearchModal from "../components/UserSearchModal";
+import UserSearchModal from "../components/modals/UserSearchModal";
 import { io, Socket } from "socket.io-client";
 
 function Workspace() {

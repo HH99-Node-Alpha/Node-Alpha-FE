@@ -1,5 +1,5 @@
 import React from "react";
-import { ColorType } from "../types/WorkspacesBoards";
+import { ColorType } from "../../types/WorkspacesBoards";
 
 interface ChangeBoardColorModalProps {
   isColorModalOpen: boolean;
@@ -55,10 +55,12 @@ const ChangeBoardColorModal: React.FC<ChangeBoardColorModalProps> = ({
                 <img
                   src={tempSelectedBackground.backgroundUrl}
                   alt="Selected Background"
+                  className="rounded-md"
                 />
               )}
               {!tempSelectedBackground?.backgroundUrl && (
                 <div
+                  className="rounded-md"
                   style={{
                     background: `linear-gradient(${tempSelectedBackground?.startColor})`,
                   }}

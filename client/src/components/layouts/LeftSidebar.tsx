@@ -2,11 +2,11 @@ import { BsPerson } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 
-import { userInfoState } from "../states/userInfoState";
+import { userInfoState } from "../../states/userInfoState";
 import {
   BoardType,
   UserWorkspacesBoardSpaces,
-} from "../types/WorkspacesBoards";
+} from "../../types/WorkspacesBoards";
 
 function LeftSidebar({
   workspaceId,

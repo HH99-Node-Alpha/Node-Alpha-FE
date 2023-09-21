@@ -2,9 +2,9 @@ import { useState } from "react";
 import { GoBell } from "react-icons/go";
 import { useNavigate } from "react-router-dom";
 import { useRecoilValue } from "recoil";
-import { postAPI } from "../axios";
-import useModal from "../hooks/useModal";
-import { userInfoState } from "../states/userInfoState";
+import { postAPI } from "../../axios";
+import useModal from "../../hooks/useModal";
+import { userInfoState } from "../../states/userInfoState";
 
 function Navbar({ page }: { page?: string }) {
   const navigate = useNavigate();

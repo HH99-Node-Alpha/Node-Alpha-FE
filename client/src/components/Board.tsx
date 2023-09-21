@@ -14,7 +14,7 @@ import { TCard, TColumn } from "../types/dnd";
 import { getCardStyle, getColumnStyle } from "../utils/dnd";
 import BoardHeader from "./BoardHeader";
 import NewColumnInput from "./NewColumnInput";
-import RightSidebar from "./RightSidebar";
+import RightSidebar from "./layouts/RightSidebar";
 import { useRecoilValue } from "recoil";
 import { userInfoState } from "../states/userInfoState";
 
