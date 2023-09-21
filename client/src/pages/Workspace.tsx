@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Board from "../components/Board";
 import Wrapper from "../components/Wrapper";
 import Navbar from "../components/layouts/Navbar";
@@ -28,7 +28,7 @@ function Workspace() {
     openModal: openUserSearchModal,
     closeModal: closeUserSearchModal,
   } = useModal();
-
+  const navigate = useNavigate();
   const [selectedBackground, setSelectedBackground] =
     useState<ColorType | null>(null);
   const [backgrounds, setBackgrounds] = useState<ColorType[]>([]);
@@ -43,20 +43,24 @@ function Workspace() {
   const [socket, setSocket] = useState<Socket | null>(null);
 
   useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("user")!);
+    if (!user) {
+      alert("로그인이 필요한 페이지입니다.");
+      navigate("/");
+    }
     const newSocket = io(`${process.env.REACT_APP_SERVER_URL!}/main`, {
       query: {
-        userId: 1,
+        userId: user.userId,
       },
       path: "/socket.io",
     });
     newSocket.emit("join");
-    console.log("소켓연결");
     setSocket(newSocket);
 
     return () => {
       newSocket.disconnect();
     };
-  }, []);
+  }, [navigate]);
 
   const fetchUserData = async () => {
     const response = await getAPI("/api/users");

@@ -27,7 +27,14 @@ const SignIn: FC = () => {
   ) => {
     event.preventDefault();
     try {
-      await postAPI("/api/login", signinRequest);
+      const result = await postAPI("/api/login", signinRequest);
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          userId: result.data.data.userId,
+          userName: result.data.data.username,
+        })
+      );
       navigate("/main");
     } catch (error: any) {
       console.error("Signin error:", error.response?.data || error.message);
