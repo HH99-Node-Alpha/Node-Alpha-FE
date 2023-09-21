@@ -42,7 +42,7 @@ const UserSearchModal: React.FC<UserSearchModalProps> = ({
           <div>초대하기</div>
           <button onClick={closeUserSearchModal}>X</button>
         </div>
-        <div className="flex justify-between px-2 gap-4 mt-3 items-center">
+        <div className="flex justify-between px-2 gap-4 mt-3 items-center mb-2">
           <input
             className="w-full h-8 border-2 rounded-md border-black px-2"
             value={searchTerm}
@@ -57,10 +57,16 @@ const UserSearchModal: React.FC<UserSearchModalProps> = ({
         {data && (
           <ul>
             {data.map((user: any) => (
-              <div key={user.id} className="flex flex-col px-3">
-                <li>{user.email}</li>
-                <li>{user.name}</li>
-              </div>
+              <button
+                key={user.id}
+                className="w-full h-16 flex justify-between hover:bg-blue-400 hover:text-white rounded-md py-2"
+              >
+                <div className="flex flex-col items-start justify-center w-full h-full px-3">
+                  <li>{user.email}</li>
+                  <li>{user.name}</li>
+                </div>
+                <div className="w-[40px] h-full flex items-center ">+</div>
+              </button>
             ))}
           </ul>
         )}
