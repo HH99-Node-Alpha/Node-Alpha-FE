@@ -1,16 +1,37 @@
 import { useState } from "react";
 import { GoBell } from "react-icons/go";
 import { useNavigate } from "react-router-dom";
+import { useRecoilValue } from "recoil";
 import { postAPI } from "../axios";
 import useModal from "../hooks/useModal";
+import { userInfoState } from "../states/userInfoState";
 
 function Navbar({ page }: { page?: string }) {
   const navigate = useNavigate();
-  const { isOpen, modalRef, openModal, closeModal } = useModal();
+  const {
+    isOpen: createWorkspaceBoardIsOpen,
+    modalRef: createWorkspaceBoardModalRef,
+    openModal: createWorkspaceBoardModalOpen,
+    closeModal: createWorkspaceBoardModalClose,
+  } = useModal();
+  const {
+    isOpen: workspaceModalIsOpen,
+    modalRef: workspaceModalRef,
+    openModal: workspaceModalOpen,
+    closeModal: workspaceModalClose,
+  } = useModal();
   const [selectedType, setSelectedType] = useState<
     "workspace" | "board" | null
   >(null);
   const [name, setName] = useState("");
+  const userWorkspacesBoards = useRecoilValue(userInfoState);
+  const workspaces = userWorkspacesBoards.map((v) => {
+    return {
+      workspaceId: v.workspaceId,
+      workspaceName: v.workspaceName,
+      boardId: v.Boards[0].boardId,
+    };
+  });
 
   return (
     <>
@@ -26,19 +47,48 @@ function Navbar({ page }: { page?: string }) {
               alt="logo"
             />
           </div>
-          <div className="flex h-full justify-center items-center text-white hover:opacity-50">
+          <button
+            className="flex h-full justify-center items-center text-white hover:opacity-50"
+            onClick={workspaceModalOpen}
+          >
             Workspaces
-          </div>
+          </button>
           <button
             className="flex h-full justify-center items-center bg-blue-300 px-4 rounded-lg text-black hover:text-white relative"
-            onClick={openModal}
+            onClick={createWorkspaceBoardModalOpen}
           >
             Create
           </button>
-          {isOpen && (
+          {workspaceModalIsOpen && (
+            <>
+              <div
+                ref={workspaceModalRef}
+                className="absolute top-[68px] left-[92px] w-[240px] bg-white rounded-md px-3 py-2 flex flex-col gap-2"
+              >
+                {workspaces.map((workspace) => {
+                  return (
+                    <>
+                      <div
+                        onClick={() => {
+                          navigate(
+                            `/workspaces/${workspace.workspaceId}/boards/${workspace.boardId}`
+                          );
+                          workspaceModalClose();
+                        }}
+                        key={workspace.workspaceId}
+                      >
+                        {workspace.workspaceName}
+                      </div>
+                    </>
+                  );
+                })}
+              </div>
+            </>
+          )}
+          {createWorkspaceBoardIsOpen && (
             <div
-              ref={modalRef}
-              className="absolute top-16 left-[220px] flex z-20"
+              ref={createWorkspaceBoardModalRef}
+              className="absolute top-[68px] left-[220px] flex z-20"
             >
               <div className="flex flex-col w-[240px] h-auto bg-white p-4 rounded shadow-lg justify-center items-center">
                 {!selectedType ? (
@@ -85,14 +135,14 @@ function Navbar({ page }: { page?: string }) {
                           }
                           setName("");
                           setSelectedType(null);
-                          closeModal();
+                          createWorkspaceBoardModalClose();
                         }}
                       >
                         Create
                       </button>
                       <button
                         onClick={() => {
-                          closeModal();
+                          createWorkspaceBoardModalClose();
                           setSelectedType(null);
                           setName("");
                         }}
