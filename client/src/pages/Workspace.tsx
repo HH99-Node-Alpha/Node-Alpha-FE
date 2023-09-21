@@ -12,6 +12,7 @@ import { BoardType, ColorType, WorkspaceType } from "../types/WorkspacesBoards";
 import ChangeBoardColorModal from "../components/ChangeBoardColorModal";
 import { useQuery } from "react-query";
 import UserSearchModal from "../components/UserSearchModal";
+import { io, Socket } from "socket.io-client";
 
 function Workspace() {
   const { workspaceId, boardId } = useParams();
@@ -38,6 +39,24 @@ function Workspace() {
     useState<ColorType | null>(null);
   const [userWorkspacesBoards, setUserWorkspacesBoards] =
     useRecoilState<WorkspaceType[]>(userInfoState);
+
+  const [socket, setSocket] = useState<Socket | null>(null);
+
+  useEffect(() => {
+    const newSocket = io(`${process.env.REACT_APP_SERVER_URL!}/main`, {
+      query: {
+        userId: 1,
+      },
+      path: "/socket.io",
+    });
+    newSocket.emit("join");
+    console.log("소켓연결");
+    setSocket(newSocket);
+
+    return () => {
+      newSocket.disconnect();
+    };
+  }, []);
 
   const fetchUserData = async () => {
     const response = await getAPI("/api/users");
@@ -160,6 +179,8 @@ function Workspace() {
         <UserSearchModal
           userSearchModalRef={userSearchModalRef}
           closeUserSearchModal={closeUserSearchModal}
+          socket={socket}
+          workspaceId={workspaceId!}
         />
       )}
 

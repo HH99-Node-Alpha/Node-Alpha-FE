@@ -1,11 +1,14 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BsSearch } from "react-icons/bs";
 import { useQuery } from "react-query";
+import { Socket } from "socket.io-client";
 import { getAPI } from "../axios";
 
 interface UserSearchModalProps {
   userSearchModalRef: any;
   closeUserSearchModal: () => void;
+  socket: Socket | null;
+  workspaceId: string;
 }
 
 const fetchUsers = async (queryKey: any) => {
@@ -18,6 +21,8 @@ const fetchUsers = async (queryKey: any) => {
 const UserSearchModal: React.FC<UserSearchModalProps> = ({
   userSearchModalRef,
   closeUserSearchModal,
+  socket,
+  workspaceId,
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -28,6 +33,30 @@ const UserSearchModal: React.FC<UserSearchModalProps> = ({
       enabled: searchTerm.length > 0,
     }
   );
+
+  useEffect(() => {
+    if (socket) {
+      console.log(socket);
+      socket.on("invite", (data) => {
+        console.log(data);
+      });
+    } else {
+      console.log("소켓없음");
+      return;
+    }
+
+    return () => {
+      socket.off("invite");
+    };
+  });
+  console.log(socket);
+  const addMember = (invitedByUserId: number) => {
+    socket?.emit("invite", {
+      invitedUserId: 1,
+      invitedByUserId,
+      workspaceId: +workspaceId,
+    });
+  };
 
   return (
     <div
@@ -58,6 +87,10 @@ const UserSearchModal: React.FC<UserSearchModalProps> = ({
           <ul>
             {data.map((user: any) => (
               <button
+                onClick={() => {
+                  console.log(user);
+                  addMember(user.userId);
+                }}
                 key={user.id}
                 className="w-full h-16 flex justify-between hover:bg-blue-400 hover:text-white rounded-md py-2"
               >
