@@ -1,10 +1,9 @@
-import { useState } from "react";
 import { GoBell } from "react-icons/go";
 import { useNavigate } from "react-router-dom";
 import { useRecoilValue } from "recoil";
-import { postAPI } from "../../axios";
 import useModal from "../../hooks/useModal";
 import { userInfoState } from "../../states/userInfoState";
+import CreateWorkspaceBoardModal from "../modals/CreateWorkspaceBoardModal";
 
 function Navbar({ page }: { page?: string }) {
   const navigate = useNavigate();
@@ -20,10 +19,7 @@ function Navbar({ page }: { page?: string }) {
     openModal: workspaceModalOpen,
     closeModal: workspaceModalClose,
   } = useModal();
-  const [selectedType, setSelectedType] = useState<
-    "workspace" | "board" | null
-  >(null);
-  const [name, setName] = useState("");
+
   const userWorkspacesBoards = useRecoilValue(userInfoState);
   const workspaces = userWorkspacesBoards.map((v) => {
     return {
@@ -86,74 +82,11 @@ function Navbar({ page }: { page?: string }) {
             </>
           )}
           {createWorkspaceBoardIsOpen && (
-            <div
-              ref={createWorkspaceBoardModalRef}
-              className="absolute top-[68px] left-[220px] flex z-20"
-            >
-              <div className="flex flex-col w-[240px] h-auto bg-white p-4 rounded shadow-lg justify-center items-center">
-                {!selectedType ? (
-                  <>
-                    <button
-                      className="w-full hover:bg-black hover:text-white rounded-md p-2"
-                      onClick={() => setSelectedType("workspace")}
-                    >
-                      Create Workspace
-                    </button>
-                    {page !== "main" && (
-                      <button
-                        className="w-full hover:bg-black hover:text-white rounded-md p-2"
-                        onClick={() => setSelectedType("board")}
-                      >
-                        Create Board
-                      </button>
-                    )}
-                  </>
-                ) : (
-                  <>
-                    <input
-                      className="border-2 border-black px-2 rounded-md py-1"
-                      type="text"
-                      placeholder={
-                        selectedType === "workspace"
-                          ? "Workspace Name"
-                          : "Board Name"
-                      }
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                    />
-                    <div className="flex justify-between w-full px-2 py-1 mt-1">
-                      <button
-                        onClick={async () => {
-                          if (selectedType === "workspace") {
-                            await postAPI("/api/workspaces", {
-                              workspaceName: name,
-                            });
-                          } else {
-                            await postAPI("/api/workspaces/1/boards", {
-                              boardName: name,
-                            });
-                          }
-                          setName("");
-                          setSelectedType(null);
-                          createWorkspaceBoardModalClose();
-                        }}
-                      >
-                        Create
-                      </button>
-                      <button
-                        onClick={() => {
-                          createWorkspaceBoardModalClose();
-                          setSelectedType(null);
-                          setName("");
-                        }}
-                      >
-                        Close
-                      </button>
-                    </div>
-                  </>
-                )}
-              </div>
-            </div>
+            <CreateWorkspaceBoardModal
+              page={page}
+              closeModal={createWorkspaceBoardModalClose}
+              modalRef={createWorkspaceBoardModalRef}
+            />
           )}
         </div>
         <div className="h-full  flex gap-8">
