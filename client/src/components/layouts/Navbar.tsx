@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { GoBell } from "react-icons/go";
 import { useNavigate } from "react-router-dom";
 import { useRecoilValue } from "recoil";
@@ -19,9 +18,7 @@ function Navbar({
   worksapceId?: string;
 }) {
   const navigate = useNavigate();
-  const [user, setUser] = useState<{ userId: number; name: string } | null>(
-    null
-  );
+
   const {
     isOpen: createWorkspaceBoardIsOpen,
     modalRef: createWorkspaceBoardModalRef,
@@ -51,14 +48,6 @@ function Navbar({
     };
   });
 
-  useEffect(() => {
-    const userItem = localStorage.getItem("user");
-    if (!userItem) {
-      return;
-    }
-    const user = JSON.parse(userItem);
-    setUser(user);
-  }, []);
   console.log(workspaces);
   console.log(inviteResults);
   return (
