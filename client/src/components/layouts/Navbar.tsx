@@ -1,12 +1,27 @@
+import { useEffect, useState } from "react";
 import { GoBell } from "react-icons/go";
 import { useNavigate } from "react-router-dom";
 import { useRecoilValue } from "recoil";
+import { Socket } from "socket.io-client";
 import useModal from "../../hooks/useModal";
 import { userInfoState } from "../../states/userInfoState";
 import CreateWorkspaceBoardModal from "../modals/CreateWorkspaceBoardModal";
 
-function Navbar({ page }: { page?: string }) {
+function Navbar({
+  page,
+  inviteResults,
+  socket,
+  worksapceId,
+}: {
+  page?: string;
+  inviteResults?: any;
+  socket?: Socket | null;
+  worksapceId?: string;
+}) {
   const navigate = useNavigate();
+  const [user, setUser] = useState<{ userId: number; name: string } | null>(
+    null
+  );
   const {
     isOpen: createWorkspaceBoardIsOpen,
     modalRef: createWorkspaceBoardModalRef,
@@ -20,6 +35,13 @@ function Navbar({ page }: { page?: string }) {
     closeModal: workspaceModalClose,
   } = useModal();
 
+  const {
+    isOpen: inviteResultsModalIsOpen,
+    modalRef: inviteResultsModalRef,
+    openModal: inviteResultsModalOpen,
+    closeModal: inviteResultsModalClose,
+  } = useModal();
+
   const userWorkspacesBoards = useRecoilValue(userInfoState);
   const workspaces = userWorkspacesBoards.map((v) => {
     return {
@@ -29,6 +51,16 @@ function Navbar({ page }: { page?: string }) {
     };
   });
 
+  useEffect(() => {
+    const userItem = localStorage.getItem("user");
+    if (!userItem) {
+      return;
+    }
+    const user = JSON.parse(userItem);
+    setUser(user);
+  }, []);
+  console.log(workspaces);
+  console.log(inviteResults);
   return (
     <>
       <nav className="w-full h-16 py-3 pl-1 pr-4 flex justify-between bg-[#1D2125] z-10 ">
@@ -89,8 +121,11 @@ function Navbar({ page }: { page?: string }) {
             />
           )}
         </div>
-        <div className="h-full  flex gap-8">
-          <div className="flex justify-center items-center text-white cursor-pointer">
+        <div className="h-full flex gap-8 relative">
+          <div
+            className="flex justify-center items-center text-white cursor-pointer"
+            onClick={inviteResultsModalOpen}
+          >
             <GoBell size={24} />
           </div>
           <img
@@ -99,6 +134,49 @@ function Navbar({ page }: { page?: string }) {
             alt="user"
           />
         </div>
+        {inviteResultsModalIsOpen && (
+          <div
+            ref={inviteResultsModalRef}
+            className="absolute top-[68px] right-[72px] w-[300px] bg-white rounded-md px-3 py-2 flex flex-col gap-2"
+          >
+            {inviteResults.map((result: any, index: number) => {
+              return (
+                <div key={index} className="flex justify-between items-center">
+                  <div>{result.InvitedUserId}님으로부터 초대가 왔어요!</div>
+                  <div>
+                    <button
+                      onClick={() => {
+                        socket?.emit("confirmInvitation", {
+                          workspaceId: +worksapceId!,
+                          invitationId: result.invitationId,
+                          InvitedByUserId: result.InvitedByUserId,
+                          accepted: true,
+                        });
+                        inviteResultsModalClose();
+                      }}
+                    >
+                      수락
+                    </button>
+                    <button
+                      onClick={() => {
+                        console.log(result.InvitedByUserId);
+                        socket?.emit("confirmInvitation", {
+                          workspaceId: +worksapceId!,
+                          invitationId: result.invitationId,
+                          InvitedByUserId: result.InvitedByUserId,
+                          accepted: false,
+                        });
+                        inviteResultsModalClose();
+                      }}
+                    >
+                      거절
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </nav>
     </>
   );
