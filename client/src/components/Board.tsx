@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   DragDropContext,
   Droppable,
@@ -8,7 +8,7 @@ import {
 import { useQuery } from "react-query";
 import { useParams } from "react-router-dom";
 import { addNewColumnAPI, getColumnsAPI } from "../api/boardAPI";
-import { putAPI } from "../axios";
+import { deleteAPI, putAPI } from "../axios";
 import { io, Socket } from "socket.io-client";
 import { TCard, TColumn } from "../types/dnd";
 import { getCardStyle, getColumnStyle } from "../utils/dnd";
@@ -17,6 +17,8 @@ import NewColumnInput from "./NewColumnInput";
 import RightSidebar from "./layouts/RightSidebar";
 import { useRecoilValue } from "recoil";
 import { userInfoState } from "../states/userInfoState";
+import { getBoardBackgroundStyle } from "../utils/boardStyles";
+import { LuDelete } from "react-icons/lu";
 
 type BoardProps = {
   boardId: string;
@@ -30,12 +32,9 @@ function Board({ boardId, openModal }: BoardProps) {
   const [rightSidebarOpen, setRightSidebarOpen] = useState<boolean>(false);
   const [isInputMode, setInputMode] = useState<boolean>(false);
   const [columnName, setColumnName] = useState<string>("");
-
   const [socket, setSocket] = useState<Socket | null>(null);
-
   const [editedColumnName, setEditedColumnName] = useState("");
   const [editingColumnId, setEditingColumnId] = useState<string | null>(null);
-
   const userWorkspacesBoards = useRecoilValue(userInfoState);
 
   const findBoardById = (boards: any[], id: string) => {
@@ -62,26 +61,51 @@ function Board({ boardId, openModal }: BoardProps) {
     };
   }, [boardId]);
 
+  // Column 추가 기능
+  const addColumn = useCallback(
+    (columnId: number, columnName: string, columnOrder: number) => {
+      const newColumn = {
+        columnId: `${columnId}`,
+        columnName: columnName,
+        columnOrder: columnOrder,
+        cards: [],
+      };
+      setColumns([...columns, newColumn]);
+    },
+    [columns]
+  );
+
   useEffect(() => {
     if (!socket) return;
-
-    socket.on("updateColumnOrder", ({ columnId, columnOrder }) => {
+    socket.on("changeToClient", ({ columnId, columnOrder, columnName }) => {
       setColumns((prevColumns) => {
         const updatedColumns = prevColumns.map((column) => {
           if (column.columnId === columnId) {
-            return { ...column, columnOrder };
+            return { ...column, columnOrder, columnName };
           }
           return column;
         });
-
+        console.log(updatedColumns);
         return updatedColumns.sort((a, b) => a.columnOrder - b.columnOrder);
       });
     });
 
+    socket.on("addToClient", (data) => {
+      addColumn(data.columnId, data.columnName, data.columnOrder);
+    });
+
+    socket.on("deleteToClient", ({ columnId }) => {
+      setColumns((prevColumns) => {
+        return prevColumns.filter((column) => column.columnId !== columnId);
+      });
+    });
+
     return () => {
-      socket.off("updateColumnOrder");
+      socket.off("changeToClient");
+      socket.off("addToClient");
+      socket.off("deleteToClient");
     };
-  }, [socket]);
+  }, [socket, columns, addColumn]);
 
   const {
     data: fetchedColumns,
@@ -113,22 +137,15 @@ function Board({ boardId, openModal }: BoardProps) {
       addColumn(+column.columnId, columnName, column.columnOrder);
       setInputMode(false);
       setColumnName("");
-    }
-  };
 
-  // Column 추가 기능
-  const addColumn = (
-    columnId: number,
-    columnName: string,
-    columnOrder: number
-  ) => {
-    const newColumn = {
-      columnId: `${columnId}`,
-      columnName: columnName,
-      columnOrder: columnOrder,
-      cards: [],
-    };
-    setColumns([...columns, newColumn]);
+      if (socket) {
+        socket.emit("addToServer", {
+          columnId: column.columnId,
+          columnName: columnName,
+          columnOrder: column.columnOrder,
+        });
+      }
+    }
   };
 
   const handleColumnNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -148,9 +165,27 @@ function Board({ boardId, openModal }: BoardProps) {
       `/api/workspaces/${workspaceId}/boards/${boardId}/columns/${editingColumnId}`,
       { columnName: editedColumnName }
     );
+    if (socket) {
+      socket.emit("changeToServer", {
+        columnId: editingColumnId,
+        columnName: editedColumnName,
+      });
+    }
     refetch();
-
     setEditingColumnId(null);
+  };
+
+  const deleteColumn = async (columnId: string) => {
+    console.log(columnId);
+    await deleteAPI(
+      `/api/workspaces/${workspaceId}/boards/${boardId}/columns/${columnId}`
+    );
+    if (socket) {
+      socket.emit("deleteToServer", {
+        columnId,
+      });
+    }
+    refetch();
   };
 
   // Card 추가 기능
@@ -178,7 +213,6 @@ function Board({ boardId, openModal }: BoardProps) {
       const reorderedColumns = Array.from(columns);
       const [movedColumn] = reorderedColumns.splice(source.index, 1);
       reorderedColumns.splice(destination.index, 0, movedColumn);
-
       if (
         destination.index > 0 &&
         destination.index < reorderedColumns.length - 1
@@ -192,16 +226,14 @@ function Board({ boardId, openModal }: BoardProps) {
         movedColumn.columnOrder =
           reorderedColumns[reorderedColumns.length - 2].columnOrder + 1;
       }
-
       setColumns(reorderedColumns);
-
       if (socket) {
-        socket.emit("ColumnToServer", {
+        socket.emit("changeToServer", {
           columnId: movedColumn.columnId,
+          columnName: movedColumn.columnName,
           columnOrder: movedColumn.columnOrder,
         });
       }
-
       await putAPI(
         `/api/workspaces/${workspaceId}/boards/${boardId}/columns/${movedColumn.columnId}`,
         { columnOrder: movedColumn.columnOrder }
@@ -265,25 +297,7 @@ function Board({ boardId, openModal }: BoardProps) {
     return <div>로딩 중...</div>;
   }
 
-  const { Color } = board || {};
-
-  let backgroundStyle = {};
-  if (Color?.backgroundUrl) {
-    backgroundStyle = {
-      backgroundImage: `url(${Color.backgroundUrl})`,
-      backgroundSize: "cover",
-      backgroundRepeat: "no-repeat",
-      backgroundPosition: "center center",
-    };
-  } else if (Color?.startColor) {
-    backgroundStyle = {
-      backgroundImage: Color.startColor,
-    };
-  } else if (Color?.endColor) {
-    backgroundStyle = {
-      backgroundImage: Color.endColor,
-    };
-  }
+  const backgroundStyle = getBoardBackgroundStyle(board);
 
   return (
     <div className="h-full w-full flex flex-col" style={backgroundStyle}>
@@ -338,14 +352,21 @@ function Board({ boardId, openModal }: BoardProps) {
                                 className="w-full h-8 px-2 bg-[#22272B] rounded-md mb-2 text-white outline-none"
                               />
                             ) : (
-                              <h2
-                                className="text-white mb-2 h-8 flex items-center px-2 w-full"
-                                onClick={() => {
-                                  setEditingColumnId(column.columnId);
-                                  setEditedColumnName(column.columnName);
-                                }}
-                              >
-                                {column.columnName}
+                              <h2 className="text-white mb-2 h-8 flex items-center px-2 w-full justify-between">
+                                <div
+                                  className="w-full"
+                                  onClick={() => {
+                                    setEditingColumnId(column.columnId);
+                                    setEditedColumnName(column.columnName);
+                                  }}
+                                >
+                                  {column.columnName}
+                                </div>
+                                <button
+                                  onClick={(e) => deleteColumn(column.columnId)}
+                                >
+                                  <LuDelete />
+                                </button>
                               </h2>
                             )}
                             {column.cards?.map((card, index) => (
