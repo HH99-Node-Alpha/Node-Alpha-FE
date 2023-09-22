@@ -41,6 +41,7 @@ function Workspace() {
     useRecoilState<WorkspaceType[]>(userInfoState);
 
   const [socket, setSocket] = useState<Socket | null>(null);
+  const [inviteResults, setInviteResults] = useState([]);
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user")!);
@@ -48,6 +49,7 @@ function Workspace() {
       alert("로그인이 필요한 페이지입니다.");
       navigate("/");
     }
+    console.log(user.userId);
     const newSocket = io(`${process.env.REACT_APP_SERVER_URL!}/main`, {
       query: {
         userId: user.userId,
@@ -55,12 +57,27 @@ function Workspace() {
       path: "/socket.io",
     });
     newSocket.emit("join");
+    newSocket.emit("loginAndAlarm", user.userId);
     setSocket(newSocket);
 
     return () => {
       newSocket.disconnect();
     };
   }, [navigate]);
+
+  useEffect(() => {
+    if (!socket) return;
+    socket.on("loginAndAlarm", (data: any) => {
+      console.log(data);
+      if (data.inviteResult && Array.isArray(data.inviteResult)) {
+        setInviteResults(data.inviteResult);
+      }
+    });
+
+    return () => {
+      socket.off("loginAndAlarm");
+    };
+  }, [socket]);
 
   const fetchUserData = async () => {
     const response = await getAPI("/api/users");
@@ -171,7 +188,11 @@ function Workspace() {
 
   return (
     <Wrapper>
-      <Navbar />
+      <Navbar
+        inviteResults={inviteResults}
+        socket={socket}
+        worksapceId={workspaceId}
+      />
       <div className="flex w-full h-full overflow-auto">
         <LeftSidebar
           workspaceId={workspaceId!}
