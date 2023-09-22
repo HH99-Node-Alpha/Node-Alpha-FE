@@ -11,11 +11,13 @@ function Navbar({
   inviteResults,
   socket,
   worksapceId,
+  removeInvitationById,
 }: {
   page?: string;
   inviteResults?: any;
   socket?: Socket | null;
   worksapceId?: string;
+  removeInvitationById?: (invitationId: number) => void;
 }) {
   const navigate = useNavigate();
 
@@ -142,6 +144,7 @@ function Navbar({
                           accepted: true,
                         });
                         inviteResultsModalClose();
+                        removeInvitationById?.(result.invitationId);
                       }}
                     >
                       수락
@@ -156,6 +159,7 @@ function Navbar({
                           accepted: false,
                         });
                         inviteResultsModalClose();
+                        removeInvitationById?.(result.invitationId);
                       }}
                     >
                       거절

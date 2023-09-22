@@ -14,6 +14,10 @@ import { useQuery } from "react-query";
 import UserSearchModal from "../components/modals/UserSearchModal";
 import { io, Socket } from "socket.io-client";
 
+type InviteResult = {
+  invitationId: number;
+};
+
 function Workspace() {
   const { workspaceId, boardId } = useParams();
   const {
@@ -41,7 +45,7 @@ function Workspace() {
     useRecoilState<WorkspaceType[]>(userInfoState);
 
   const [socket, setSocket] = useState<Socket | null>(null);
-  const [inviteResults, setInviteResults] = useState([]);
+  const [inviteResults, setInviteResults] = useState<InviteResult[]>([]);
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user")!);
@@ -182,6 +186,12 @@ function Workspace() {
     return backgroundStyle;
   };
 
+  const removeInvitationById = (invitationId: number) => {
+    setInviteResults((prev) =>
+      prev.filter((result) => result.invitationId !== invitationId)
+    );
+  };
+
   const previewBackgroundStyle = determineBackgroundStyle(
     tempSelectedBackground || currentBoardBackground
   );
@@ -192,6 +202,7 @@ function Workspace() {
         inviteResults={inviteResults}
         socket={socket}
         worksapceId={workspaceId}
+        removeInvitationById={removeInvitationById}
       />
       <div className="flex w-full h-full overflow-auto">
         <LeftSidebar
