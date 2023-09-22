@@ -20,18 +20,22 @@ axios.interceptors.request.use(
 
 axios.interceptors.response.use(
   async (response) => {
-    if (response.data && response.data.newAccessToken) {
-      Cookies.set("accessToken", response.data.newAccessToken);
-      const originalRequest = response.config;
-      originalRequest.headers["Authorization"] = response.data.newAccessToken;
-      return await axios(originalRequest);
-    }
     return response;
   },
   async (error) => {
     const originalRequest = error.config;
-    if (error.response.status === 401 && !originalRequest._retry) {
+    if (
+      error.response.status === 401 &&
+      !originalRequest._retry &&
+      originalRequest.url !== `${API_BASE_URL}/api/refresh`
+    ) {
       originalRequest._retry = true;
+
+      const refreshResponse = await axios.post(`${API_BASE_URL}/api/refresh`);
+      const newToken = refreshResponse.data.newAccessToken;
+
+      originalRequest.headers["Authorization"] = `Bearer ${newToken}`;
+      return axios(originalRequest);
     }
     return Promise.reject(error);
   }
