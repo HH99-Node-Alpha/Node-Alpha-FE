@@ -5,6 +5,7 @@ import { Socket } from "socket.io-client";
 import useModal from "../../hooks/useModal";
 import { userInfoState } from "../../states/userInfoState";
 import CreateWorkspaceBoardModal from "../modals/CreateWorkspaceBoardModal";
+import InviteResultsModalItem from "../modals/InviteResultModalItem";
 
 function Navbar({
   page,
@@ -130,44 +131,16 @@ function Navbar({
             ref={inviteResultsModalRef}
             className="absolute top-[68px] right-[72px] w-[300px] bg-white rounded-md px-3 py-2 flex flex-col gap-2"
           >
-            {inviteResults.map((result: any, index: number) => {
-              return (
-                <div key={index} className="flex justify-between items-center">
-                  <div>{result.InvitedUserId}님으로부터 초대가 왔어요!</div>
-                  <div>
-                    <button
-                      onClick={() => {
-                        socket?.emit("confirmInvitation", {
-                          workspaceId: +worksapceId!,
-                          invitationId: result.invitationId,
-                          InvitedByUserId: result.InvitedByUserId,
-                          accepted: true,
-                        });
-                        inviteResultsModalClose();
-                        removeInvitationById?.(result.invitationId);
-                      }}
-                    >
-                      수락
-                    </button>
-                    <button
-                      onClick={() => {
-                        console.log(result.InvitedByUserId);
-                        socket?.emit("confirmInvitation", {
-                          workspaceId: +worksapceId!,
-                          invitationId: result.invitationId,
-                          InvitedByUserId: result.InvitedByUserId,
-                          accepted: false,
-                        });
-                        inviteResultsModalClose();
-                        removeInvitationById?.(result.invitationId);
-                      }}
-                    >
-                      거절
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
+            {inviteResults.map((result: any, index: number) => (
+              <InviteResultsModalItem
+                key={index}
+                result={result}
+                worksapceId={worksapceId}
+                socket={socket}
+                closeModal={inviteResultsModalClose}
+                removeInvitationById={removeInvitationById}
+              />
+            ))}
           </div>
         )}
       </nav>
