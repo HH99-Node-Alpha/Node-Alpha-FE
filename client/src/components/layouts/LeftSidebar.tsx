@@ -1,4 +1,5 @@
 import { BsPerson } from "react-icons/bs";
+import { AiOutlineSetting } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 
@@ -29,13 +30,18 @@ function LeftSidebar({
   return (
     <>
       <div className="h-full min-w-[320px] bg-[#161A1E]">
-        <div className="w-full h-[64px] flex p-4 mb-4 gap-4 items-center border-b-2 border-[#2C3238] cursor-pointer">
-          <img
-            className="w-[40px] h-[40px] rounded-md cursor-pointer"
-            src={process.env.PUBLIC_URL + "/assets/dev-jeans.png"}
-            alt="user"
-          />
-          <div className="text-white">Alpha's Workspace</div>
+        <div className="w-full h-[64px] flex p-4 mb-4 items-center justify-between border-b-2 border-[#2C3238]">
+          <div className="flex gap-4 items-center cursor-default">
+            <img
+              className="w-[40px] h-[40px] rounded-md"
+              src={process.env.PUBLIC_URL + "/assets/dev-jeans.png"}
+              alt="user"
+            />
+            <div className="text-white">{workspace?.workspaceName}</div>
+          </div>
+          <button className="text-white w-[20px] h-full">
+            <AiOutlineSetting size={20} />
+          </button>
         </div>
         <button
           onClick={openUserSearchModal}
