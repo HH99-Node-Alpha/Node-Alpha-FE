@@ -85,7 +85,6 @@ function Board({ boardId, openModal }: BoardProps) {
           }
           return column;
         });
-        console.log(updatedColumns);
         return updatedColumns.sort((a, b) => a.columnOrder - b.columnOrder);
       });
     });
@@ -176,7 +175,6 @@ function Board({ boardId, openModal }: BoardProps) {
   };
 
   const deleteColumn = async (columnId: string) => {
-    console.log(columnId);
     await deleteAPI(
       `/api/workspaces/${workspaceId}/boards/${boardId}/columns/${columnId}`
     );

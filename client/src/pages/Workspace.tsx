@@ -58,7 +58,6 @@ function Workspace() {
       alert("로그인이 필요한 페이지입니다.");
       navigate("/");
     }
-    console.log(user.userId);
     const newSocket = io(`${process.env.REACT_APP_SERVER_URL!}/main`, {
       query: {
         userId: user.userId,
@@ -77,7 +76,6 @@ function Workspace() {
   useEffect(() => {
     if (!socket) return;
     socket.on("loginAndAlarm", (data: any) => {
-      console.log(data);
       if (data.inviteResult && Array.isArray(data.inviteResult)) {
         setInviteResults(data.inviteResult);
       }
