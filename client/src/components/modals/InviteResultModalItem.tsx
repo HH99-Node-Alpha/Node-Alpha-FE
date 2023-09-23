@@ -18,11 +18,15 @@ function InviteResultsModalItem({
   removeInvitationById,
 }: InviteResultsModalItemProps) {
   const navigate = useNavigate();
+  console.log(result);
   return (
-    <div className="flex justify-between items-center">
-      <div>{result.InvitedUserId}님으로부터 초대가 왔어요!</div>
+    <div className="flex justify-between items-center gap-3">
       <div>
+        {result.workspaceName}의 {result.userName}님으로부터 초대가 왔어요!
+      </div>
+      <div className="flex gap-2">
         <button
+          className=" bg-blue-500 text-white px-[6px] rounded-md"
           onClick={() => {
             socket?.emit("confirmInvitation", {
               WorkspaceId: +result.WorkspaceId!,
@@ -35,9 +39,10 @@ function InviteResultsModalItem({
             navigate("/main");
           }}
         >
-          수락
+          O
         </button>
         <button
+          className=" bg-rose-400 text-white px-[6px] rounded-md"
           onClick={() => {
             socket?.emit("confirmInvitation", {
               workspaceId: +worksapceId!,
@@ -49,7 +54,7 @@ function InviteResultsModalItem({
             removeInvitationById?.(result.invitationId);
           }}
         >
-          거절
+          X
         </button>
       </div>
     </div>
