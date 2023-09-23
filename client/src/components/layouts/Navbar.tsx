@@ -2,6 +2,7 @@ import { GoBell } from "react-icons/go";
 import { useNavigate } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import { Socket } from "socket.io-client";
+import { postAPI } from "../../axios";
 import useModal from "../../hooks/useModal";
 import {
   inviteResultsState,
@@ -43,6 +44,13 @@ function Navbar({
     closeModal: inviteResultsModalClose,
   } = useModal();
 
+  const {
+    isOpen: userModalIsOpen,
+    modalRef: userModalRef,
+    openModal: userModalOpen,
+    closeModal: userModalClose,
+  } = useModal();
+
   const userWorkspacesBoards = useRecoilValue(userWorkspacesBoardsState);
   const inviteResults = useRecoilValue(inviteResultsState);
   const workspaces = userWorkspacesBoards.map((v) => {
@@ -52,6 +60,10 @@ function Navbar({
       boardId: v.Boards[0].boardId,
     };
   });
+
+  const logout = async () => {
+    await postAPI("/api/logout", {});
+  };
 
   return (
     <>
@@ -95,6 +107,7 @@ function Navbar({
                           );
                           workspaceModalClose();
                         }}
+                        className="hover:bg-blue-500  hover:text-white p-2 rounded"
                         key={workspace.workspaceId}
                       >
                         {workspace.workspaceName}
@@ -114,16 +127,19 @@ function Navbar({
           )}
         </div>
         <div className="h-full flex gap-8 relative">
-          <div
-            className="flex justify-center items-center text-white cursor-pointer"
-            onClick={inviteResultsModalOpen}
-          >
-            <GoBell size={24} />
-          </div>
+          {page !== "main" && (
+            <div
+              className="flex justify-center items-center text-white cursor-pointer"
+              onClick={inviteResultsModalOpen}
+            >
+              <GoBell size={24} />
+            </div>
+          )}
           <img
             className="h-full rounded-full cursor-pointer"
             src={process.env.PUBLIC_URL + "/assets/dev-jeans.png"}
             alt="user"
+            onClick={userModalOpen}
           />
         </div>
         {inviteResultsModalIsOpen && (
@@ -131,16 +147,48 @@ function Navbar({
             ref={inviteResultsModalRef}
             className="absolute top-[68px] right-[72px] w-[300px] bg-white rounded-md px-3 py-2 flex flex-col gap-2"
           >
-            {inviteResults.map((result: any, index: number) => (
-              <InviteResultsModalItem
-                key={index}
-                result={result}
-                worksapceId={worksapceId}
-                socket={socket}
-                closeModal={inviteResultsModalClose}
-                removeInvitationById={removeInvitationById}
-              />
-            ))}
+            {inviteResults.length === 0 ? (
+              <div className="h-40 flex justify-center items-center w-full cursor-default">
+                🙅‍♀️알림이 없어요
+              </div>
+            ) : (
+              inviteResults.map((result: any, index: number) => (
+                <InviteResultsModalItem
+                  key={index}
+                  result={result}
+                  worksapceId={worksapceId}
+                  socket={socket}
+                  closeModal={inviteResultsModalClose}
+                  removeInvitationById={removeInvitationById}
+                />
+              ))
+            )}
+          </div>
+        )}
+        {userModalIsOpen && (
+          <div
+            ref={userModalRef}
+            className="absolute top-[68px] right-[8px] w-[100px] bg-white rounded-md px-3 py-2 flex flex-col gap-2"
+          >
+            <button
+              onClick={() => {
+                alert("아직 준비중인 기능입니다!");
+                userModalClose();
+              }}
+              className="hover:bg-rose-400  hover:text-white p-1 rounded"
+            >
+              수정하기
+            </button>
+            <button
+              onClick={() => {
+                logout();
+                navigate("/");
+                userModalClose();
+              }}
+              className="hover:bg-rose-400  hover:text-white p-1 rounded"
+            >
+              로그아웃
+            </button>
           </div>
         )}
       </nav>
