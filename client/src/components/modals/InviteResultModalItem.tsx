@@ -1,4 +1,5 @@
 // InviteResultsModalItem.tsx
+import { useNavigate } from "react-router-dom";
 import { Socket } from "socket.io-client";
 
 interface InviteResultsModalItemProps {
@@ -16,6 +17,7 @@ function InviteResultsModalItem({
   closeModal,
   removeInvitationById,
 }: InviteResultsModalItemProps) {
+  const navigate = useNavigate();
   return (
     <div className="flex justify-between items-center">
       <div>{result.InvitedUserId}님으로부터 초대가 왔어요!</div>
@@ -23,13 +25,14 @@ function InviteResultsModalItem({
         <button
           onClick={() => {
             socket?.emit("confirmInvitation", {
-              workspaceId: +worksapceId!,
+              WorkspaceId: +result.WorkspaceId!,
               invitationId: result.invitationId,
               InvitedByUserId: result.InvitedByUserId,
               accepted: true,
             });
             closeModal();
             removeInvitationById?.(result.invitationId);
+            navigate("/main");
           }}
         >
           수락
