@@ -1,7 +1,13 @@
 import { atom } from "recoil";
+import { InviteResult } from "../pages/Workspace";
 import { WorkspaceType } from "../types/WorkspacesBoards";
 
-export const userInfoState = atom<WorkspaceType[]>({
+export const userWorkspacesBoardsState = atom<WorkspaceType[]>({
   key: "userWorkspacesBoardsState",
+  default: [],
+});
+
+export const inviteResultsState = atom<InviteResult[]>({
+  key: "inviteResultsState",
   default: [],
 });

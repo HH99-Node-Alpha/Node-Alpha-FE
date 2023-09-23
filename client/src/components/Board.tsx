@@ -16,7 +16,7 @@ import BoardHeader from "./BoardHeader";
 import NewColumnInput from "./NewColumnInput";
 import RightSidebar from "./layouts/RightSidebar";
 import { useRecoilValue } from "recoil";
-import { userInfoState } from "../states/userInfoState";
+import { userWorkspacesBoardsState } from "../states/userInfoState";
 import { getBoardBackgroundStyle } from "../utils/boardStyles";
 import { LuDelete } from "react-icons/lu";
 
@@ -35,7 +35,7 @@ function Board({ boardId, openModal }: BoardProps) {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [editedColumnName, setEditedColumnName] = useState("");
   const [editingColumnId, setEditingColumnId] = useState<string | null>(null);
-  const userWorkspacesBoards = useRecoilValue(userInfoState);
+  const userWorkspacesBoards = useRecoilValue(userWorkspacesBoardsState);
 
   const findBoardById = (boards: any[], id: string) => {
     for (const workspace of boards) {

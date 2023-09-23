@@ -4,7 +4,7 @@ import Navbar from "../components/layouts/Navbar";
 import { getAPI } from "../axios";
 import { useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
-import { userInfoState } from "../states/userInfoState";
+import { userWorkspacesBoardsState } from "../states/userInfoState";
 
 type Workspace = {
   Boards: Board[];
@@ -57,7 +57,7 @@ const fetchUserData = async () => {
 };
 
 function Main() {
-  const [, setUserWorkspacesBoards] = useRecoilState(userInfoState);
+  const [, setUserWorkspacesBoards] = useRecoilState(userWorkspacesBoardsState);
   const { data, isLoading, isError } = useQuery("userData", fetchUserData, {
     onSuccess: (data) => {
       setUserWorkspacesBoards(data);

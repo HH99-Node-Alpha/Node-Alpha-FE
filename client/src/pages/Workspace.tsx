@@ -6,7 +6,10 @@ import LeftSidebar from "../components/layouts/LeftSidebar";
 import { useEffect, useState } from "react";
 import useModal from "../hooks/useModal";
 import { useRecoilState } from "recoil";
-import { userInfoState } from "../states/userInfoState";
+import {
+  inviteResultsState,
+  userWorkspacesBoardsState,
+} from "../states/userInfoState";
 import { getAPI, putAPI } from "../axios";
 import { BoardType, ColorType, WorkspaceType } from "../types/WorkspacesBoards";
 import ChangeBoardColorModal from "../components/modals/ChangeBoardColorModal";
@@ -14,9 +17,9 @@ import { useQuery } from "react-query";
 import UserSearchModal from "../components/modals/UserSearchModal";
 import { io, Socket } from "socket.io-client";
 
-type InviteResult = {
+export interface InviteResult {
   invitationId: number;
-};
+}
 
 function Workspace() {
   const { workspaceId, boardId } = useParams();
@@ -41,11 +44,13 @@ function Workspace() {
 
   const [currentBoardBackground, setCurrentBoardBackground] =
     useState<ColorType | null>(null);
-  const [userWorkspacesBoards, setUserWorkspacesBoards] =
-    useRecoilState<WorkspaceType[]>(userInfoState);
+  const [userWorkspacesBoards, setUserWorkspacesBoards] = useRecoilState<
+    WorkspaceType[]
+  >(userWorkspacesBoardsState);
 
   const [socket, setSocket] = useState<Socket | null>(null);
-  const [inviteResults, setInviteResults] = useState<InviteResult[]>([]);
+  const [, setInviteResults] =
+    useRecoilState<InviteResult[]>(inviteResultsState);
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user")!);
@@ -81,7 +86,7 @@ function Workspace() {
     return () => {
       socket.off("loginAndAlarm");
     };
-  }, [socket]);
+  }, [socket, setInviteResults]);
 
   const fetchUserData = async () => {
     const response = await getAPI("/api/users");
@@ -199,7 +204,6 @@ function Workspace() {
   return (
     <Wrapper>
       <Navbar
-        inviteResults={inviteResults}
         socket={socket}
         worksapceId={workspaceId}
         removeInvitationById={removeInvitationById}

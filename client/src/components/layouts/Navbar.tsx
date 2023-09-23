@@ -3,19 +3,20 @@ import { useNavigate } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import { Socket } from "socket.io-client";
 import useModal from "../../hooks/useModal";
-import { userInfoState } from "../../states/userInfoState";
+import {
+  inviteResultsState,
+  userWorkspacesBoardsState,
+} from "../../states/userInfoState";
 import CreateWorkspaceBoardModal from "../modals/CreateWorkspaceBoardModal";
 import InviteResultsModalItem from "../modals/InviteResultModalItem";
 
 function Navbar({
   page,
-  inviteResults,
   socket,
   worksapceId,
   removeInvitationById,
 }: {
   page?: string;
-  inviteResults?: any;
   socket?: Socket | null;
   worksapceId?: string;
   removeInvitationById?: (invitationId: number) => void;
@@ -42,7 +43,8 @@ function Navbar({
     closeModal: inviteResultsModalClose,
   } = useModal();
 
-  const userWorkspacesBoards = useRecoilValue(userInfoState);
+  const userWorkspacesBoards = useRecoilValue(userWorkspacesBoardsState);
+  const inviteResults = useRecoilValue(inviteResultsState);
   const workspaces = userWorkspacesBoards.map((v) => {
     return {
       workspaceId: v.workspaceId,
@@ -51,8 +53,6 @@ function Navbar({
     };
   });
 
-  console.log(workspaces);
-  console.log(inviteResults);
   return (
     <>
       <nav className="w-full h-16 py-3 pl-1 pr-4 flex justify-between bg-[#1D2125] z-10 ">

@@ -2,7 +2,7 @@ import { BsPerson } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 
-import { userInfoState } from "../../states/userInfoState";
+import { userWorkspacesBoardsState } from "../../states/userInfoState";
 import {
   BoardType,
   UserWorkspacesBoardSpaces,
@@ -16,8 +16,9 @@ function LeftSidebar({
   openUserSearchModal: () => void;
 }) {
   const navigate = useNavigate();
-  const userWorkspacesBoardSpaces: UserWorkspacesBoardSpaces =
-    useRecoilValue(userInfoState);
+  const userWorkspacesBoardSpaces: UserWorkspacesBoardSpaces = useRecoilValue(
+    userWorkspacesBoardsState
+  );
 
   const workspace = userWorkspacesBoardSpaces.find(
     (item) => item.workspaceId === Number(workspaceId)
