@@ -1,5 +1,8 @@
 import React, { useState } from "react";
-import { postAPI } from "../../axios";
+import { useQuery } from "react-query";
+import { useRecoilState } from "recoil";
+import { getAPI, postAPI } from "../../axios";
+import { userWorkspacesBoardsState } from "../../states/userInfoState";
 
 type CreateWorkspaceBoardModalProps = {
   page?: string;
@@ -16,7 +19,18 @@ const CreateWorkspaceBoardModal: React.FC<CreateWorkspaceBoardModalProps> = ({
     "workspace" | "board" | null
   >(null);
   const [name, setName] = useState("");
+  const [, setUserWorkspacesBoards] = useRecoilState(userWorkspacesBoardsState);
 
+  const fetchUserData = async () => {
+    const response = await getAPI("/api/users");
+    return response.data;
+  };
+
+  const { refetch } = useQuery("userData", fetchUserData, {
+    onSuccess: (data) => {
+      setUserWorkspacesBoards(data);
+    },
+  });
   return (
     <div ref={modalRef} className="absolute top-[68px] left-[220px] flex z-20">
       <div className="flex flex-col w-[240px] h-auto bg-white p-4 rounded shadow-lg justify-center items-center">
@@ -62,6 +76,7 @@ const CreateWorkspaceBoardModal: React.FC<CreateWorkspaceBoardModalProps> = ({
                   }
                   setName("");
                   setSelectedType(null);
+                  refetch();
                   closeModal();
                 }}
               >
@@ -71,6 +86,7 @@ const CreateWorkspaceBoardModal: React.FC<CreateWorkspaceBoardModalProps> = ({
                 onClick={() => {
                   closeModal();
                   setSelectedType(null);
+                  refetch();
                   setName("");
                 }}
               >
