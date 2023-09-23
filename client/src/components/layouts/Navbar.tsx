@@ -57,7 +57,7 @@ function Navbar({
     return {
       workspaceId: v.workspaceId,
       workspaceName: v.workspaceName,
-      boardId: v.Boards[0].boardId,
+      boardId: v.Boards[0]?.boardId,
     };
   });
 
