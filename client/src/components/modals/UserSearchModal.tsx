@@ -1,8 +1,13 @@
 import { useEffect, useState } from "react";
 import { BsSearch } from "react-icons/bs";
 import { useQuery } from "react-query";
+import { useRecoilState } from "recoil";
 import { Socket } from "socket.io-client";
 import { getAPI } from "../../axios";
+import {
+  alarmCountState,
+  inviteResultsState,
+} from "../../states/userInfoState";
 
 interface UserSearchModalProps {
   userSearchModalRef: any;
@@ -11,12 +16,6 @@ interface UserSearchModalProps {
   workspaceId: string;
 }
 
-const fetchUsers = async (queryKey: any) => {
-  const query = queryKey.queryKey[1];
-  const result = await getAPI(`/api/users/search?email=${query}&name=${query}`);
-  return result.data;
-};
-
 const UserSearchModal: React.FC<UserSearchModalProps> = ({
   userSearchModalRef,
   closeUserSearchModal,
@@ -24,6 +23,16 @@ const UserSearchModal: React.FC<UserSearchModalProps> = ({
   workspaceId,
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
+  const currentUser = JSON.parse(localStorage.getItem("user") || "{}");
+  const [, setInviteResults] = useRecoilState(inviteResultsState);
+  const [, setAlarmCount] = useRecoilState(alarmCountState);
+  const fetchUsers = async (queryKey: any) => {
+    const query = queryKey.queryKey[1];
+    const result = await getAPI(
+      `/api/users/search?email=${query}&name=${query}&workspaceId=${workspaceId}`
+    );
+    return result.data;
+  };
 
   const { data, isError, isLoading } = useQuery(
     ["searchUsers", searchTerm],
@@ -34,26 +43,24 @@ const UserSearchModal: React.FC<UserSearchModalProps> = ({
   );
 
   useEffect(() => {
-    if (socket) {
-      socket.on("invite", (data) => {
-        console.log(data);
-      });
-    } else {
-      return;
-    }
-
+    if (!socket) return;
+    socket.on("invite", (data) => {
+      console.log(data);
+      setInviteResults((prev) => [...prev, data]);
+      setAlarmCount((prev) => prev + 1);
+    });
     return () => {
       socket.off("invite");
     };
   });
+
   const addMember = (invitedByUserId: number) => {
     socket?.emit("invite", {
-      invitedUserId: 1,
+      invitedUserId: currentUser.userId,
       invitedByUserId,
       workspaceId: +workspaceId,
     });
   };
-
   return (
     <div
       className="fixed top-0 left-0 w-full h-full flex items-center justify-center z-60"
@@ -79,23 +86,30 @@ const UserSearchModal: React.FC<UserSearchModalProps> = ({
         </div>
         {isLoading && <div>Loading...</div>}
         {isError && <div>검색도중 오류가 발생했습니다.</div>}
-        {data && (
+        {data && data.length === 0 && !isLoading && !isError && (
+          <div className="w-full h-full flex justify-center items-center">
+            🙅‍♀️ 검색결과가 없어요
+          </div>
+        )}
+        {data && data.length > 0 && (
           <ul>
-            {data.map((user: any) => (
-              <button
-                onClick={() => {
-                  addMember(user.userId);
-                }}
-                key={user.id}
-                className="w-full h-16 flex justify-between hover:bg-blue-400 hover:text-white rounded-md py-2"
-              >
-                <div className="flex flex-col items-start justify-center w-full h-full px-3">
-                  <li>{user.email}</li>
-                  <li>{user.name}</li>
-                </div>
-                <div className="w-[40px] h-full flex items-center ">+</div>
-              </button>
-            ))}
+            {data
+              .filter((user: any) => user.userId !== currentUser.userId)
+              .map((user: any) => (
+                <button
+                  onClick={() => {
+                    addMember(user.userId);
+                  }}
+                  key={user.id}
+                  className="w-full h-16 flex justify-between hover:bg-blue-400 hover:text-white rounded-md py-2"
+                >
+                  <div className="flex flex-col items-start justify-center w-full h-full px-3">
+                    <li>{user.email}</li>
+                    <li>{user.name}</li>
+                  </div>
+                  <div className="w-[40px] h-full flex items-center ">+</div>
+                </button>
+              ))}
           </ul>
         )}
       </div>
