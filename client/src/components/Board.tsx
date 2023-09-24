@@ -26,6 +26,7 @@ import ColumnHeader from "./ColumnHeader";
 import { findBoardById } from "../utils/findBoardById";
 import { getAPI, putAPI } from "../axios";
 import { WorkspaceType } from "../types/WorkspacesBoards";
+import Loading from "./layouts/Loading";
 
 type BoardProps = {
   boardId: string;
@@ -312,7 +313,7 @@ function Board({ boardId, openModal }: BoardProps) {
   }
 
   if (isLoading) {
-    return <div>로딩 중...</div>;
+    return <Loading />;
   }
 
   return (

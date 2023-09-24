@@ -5,6 +5,7 @@ import { getAPI } from "../axios";
 import { useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { userWorkspacesBoardsState } from "../states/userInfoState";
+import Loading from "../components/layouts/Loading";
 
 type Workspace = {
   Boards: Board[];
@@ -65,7 +66,7 @@ function Main() {
   });
   const workspaces: Workspace[] = data || [];
 
-  if (isLoading) return <p>로딩중..</p>;
+  if (isLoading) return <Loading />;
   if (isError) return <p>서버 에러</p>;
 
   return (
