@@ -19,11 +19,13 @@ import { getCardStyle, getColumnStyle } from "../utils/dnd";
 import BoardHeader from "./BoardHeader";
 import NewColumnInput from "./NewColumnInput";
 import RightSidebar from "./layouts/RightSidebar";
-import { useRecoilValue } from "recoil";
+import { useRecoilState } from "recoil";
 import { userWorkspacesBoardsState } from "../states/userInfoState";
 import { getBoardBackgroundStyle } from "../utils/boardStyles";
 import ColumnHeader from "./ColumnHeader";
 import { findBoardById } from "../utils/findBoardById";
+import { getAPI, putAPI } from "../axios";
+import { WorkspaceType } from "../types/WorkspacesBoards";
 
 type BoardProps = {
   boardId: string;
@@ -40,8 +42,9 @@ function Board({ boardId, openModal }: BoardProps) {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [editedColumnName, setEditedColumnName] = useState("");
   const [editingColumnId, setEditingColumnId] = useState<string | null>(null);
-  const userWorkspacesBoards = useRecoilValue(userWorkspacesBoardsState);
-
+  const [userWorkspacesBoards, setUserWorkspacesBoards] = useRecoilState<
+    WorkspaceType[]
+  >(userWorkspacesBoardsState);
   const board = findBoardById(userWorkspacesBoards, boardId);
   const backgroundStyle = getBoardBackgroundStyle(board);
 
@@ -105,7 +108,7 @@ function Board({ boardId, openModal }: BoardProps) {
 
   const {
     data: fetchedColumns,
-    refetch,
+    refetch: refetchColumn,
     isLoading,
   } = useQuery(
     ["columns", workspaceId, boardId],
@@ -114,7 +117,7 @@ function Board({ boardId, openModal }: BoardProps) {
   );
 
   useEffect(() => {
-    refetch().then(() => {
+    refetchColumn().then(() => {
       if (fetchedColumns) {
         const sanitizedColumns = fetchedColumns.map((col: any) => ({
           ...col,
@@ -123,7 +126,29 @@ function Board({ boardId, openModal }: BoardProps) {
         setColumns(sanitizedColumns);
       }
     });
-  }, [workspaceId, boardId, refetch, fetchedColumns]);
+  }, [workspaceId, boardId, refetchColumn, fetchedColumns]);
+
+  const fetchUserData = async () => {
+    const response = await getAPI("/api/users");
+    return response.data;
+  };
+
+  const { refetch: refetchUserWorkspacesBoards } = useQuery(
+    "userData",
+    fetchUserData,
+    {
+      onSuccess: (data) => {
+        setUserWorkspacesBoards(data);
+      },
+    }
+  );
+
+  const handleBoardNameChange = async (newName: string) => {
+    await putAPI(`/api/workspaces/${workspaceId}/boards/${boardId}`, {
+      boardName: newName,
+    });
+    refetchUserWorkspacesBoards();
+  };
 
   const addNewColumn = async () => {
     const column = await addNewColumnAPI(workspaceId!, boardId, columnName);
@@ -167,7 +192,7 @@ function Board({ boardId, openModal }: BoardProps) {
         columnName: editedColumnName,
       });
     }
-    refetch();
+    refetchColumn();
     setEditingColumnId(null);
   };
 
@@ -178,7 +203,7 @@ function Board({ boardId, openModal }: BoardProps) {
         columnId,
       });
     }
-    refetch();
+    refetchColumn();
   };
 
   // Card 추가 기능
@@ -293,8 +318,9 @@ function Board({ boardId, openModal }: BoardProps) {
   return (
     <div className="h-full w-full flex flex-col" style={backgroundStyle}>
       <BoardHeader
-        boardName={board?.boardName}
+        boardName={board?.boardName || ""}
         toggleSidebar={() => setRightSidebarOpen(!rightSidebarOpen)}
+        onBoardNameChange={handleBoardNameChange}
       />
 
       <DragDropContext onDragEnd={onDragEnd}>
