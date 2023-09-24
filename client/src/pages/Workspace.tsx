@@ -17,6 +17,7 @@ import ChangeBoardColorModal from "../components/modals/ChangeBoardColorModal";
 import { useQuery } from "react-query";
 import UserSearchModal from "../components/modals/UserSearchModal";
 import { io, Socket } from "socket.io-client";
+import { determineBackgroundStyle } from "../utils/boardStyles";
 
 export interface InviteResult {
   invitationId: number;
@@ -168,27 +169,6 @@ function Workspace() {
       setTempSelectedBackground(null);
       closeModal();
     }
-  };
-
-  const determineBackgroundStyle = (color: ColorType | null) => {
-    let backgroundStyle = {};
-    if (color?.backgroundUrl) {
-      backgroundStyle = {
-        backgroundImage: `url(${color.backgroundUrl})`,
-        backgroundSize: "cover",
-        backgroundRepeat: "no-repeat",
-        backgroundPosition: "center center",
-      };
-    } else if (color?.startColor) {
-      backgroundStyle = {
-        background: color.startColor,
-      };
-    } else if (color?.endColor) {
-      backgroundStyle = {
-        background: color.endColor,
-      };
-    }
-    return backgroundStyle;
   };
 
   const removeInvitationById = (invitationId: number) => {

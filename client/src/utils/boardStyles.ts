@@ -1,3 +1,5 @@
+import { ColorType } from "../types/WorkspacesBoards";
+
 export const getBoardBackgroundStyle = (board: any) => {
   const { Color } = board || {};
 
@@ -19,5 +21,26 @@ export const getBoardBackgroundStyle = (board: any) => {
     };
   }
 
+  return backgroundStyle;
+};
+
+export const determineBackgroundStyle = (color: ColorType | null) => {
+  let backgroundStyle = {};
+  if (color?.backgroundUrl) {
+    backgroundStyle = {
+      backgroundImage: `url(${color.backgroundUrl})`,
+      backgroundSize: "cover",
+      backgroundRepeat: "no-repeat",
+      backgroundPosition: "center center",
+    };
+  } else if (color?.startColor) {
+    backgroundStyle = {
+      background: color.startColor,
+    };
+  } else if (color?.endColor) {
+    backgroundStyle = {
+      background: color.endColor,
+    };
+  }
   return backgroundStyle;
 };
