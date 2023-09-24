@@ -1,10 +1,12 @@
+import { useEffect } from "react";
 import { GoBell } from "react-icons/go";
 import { useNavigate } from "react-router-dom";
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { Socket } from "socket.io-client";
 import { postAPI } from "../../axios";
 import useModal from "../../hooks/useModal";
 import {
+  alarmCountState,
   inviteResultsState,
   userWorkspacesBoardsState,
 } from "../../states/userInfoState";
@@ -52,7 +54,8 @@ function Navbar({
   } = useModal();
 
   const userWorkspacesBoards = useRecoilValue(userWorkspacesBoardsState);
-  const inviteResults = useRecoilValue(inviteResultsState);
+  const [inviteResults, setInviteResults] = useRecoilState(inviteResultsState);
+  const [alarmCount, setAlarmCount] = useRecoilState(alarmCountState);
   const workspaces = userWorkspacesBoards.map((v) => {
     return {
       workspaceId: v.workspaceId,
@@ -64,6 +67,18 @@ function Navbar({
   const logout = async () => {
     await postAPI("/api/logout", {});
   };
+
+  useEffect(() => {
+    if (!socket) return;
+    socket.on("invite", (data) => {
+      console.log(data);
+      setInviteResults((prev) => [...prev, data]);
+      setAlarmCount((prev) => prev + 1);
+    });
+    return () => {
+      socket.off("invite");
+    };
+  });
 
   return (
     <>
@@ -128,12 +143,19 @@ function Navbar({
         </div>
         <div className="h-full flex gap-8 relative">
           {page !== "main" && (
-            <div
-              className="flex justify-center items-center text-white cursor-pointer"
-              onClick={inviteResultsModalOpen}
-            >
-              <GoBell size={24} />
-            </div>
+            <>
+              <div
+                className="flex justify-center items-center text-white cursor-pointer relative"
+                onClick={inviteResultsModalOpen}
+              >
+                <GoBell size={24} />
+              </div>
+              {alarmCount !== 0 && (
+                <div className="absolute right-[64px] top-0 bg-red-600 text-sm px-[6px] text-white rounded-full">
+                  {alarmCount}
+                </div>
+              )}
+            </>
           )}
           <img
             className="h-full rounded-full cursor-pointer"

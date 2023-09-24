@@ -1,6 +1,8 @@
 // InviteResultsModalItem.tsx
 import { useNavigate } from "react-router-dom";
+import { useRecoilState } from "recoil";
 import { Socket } from "socket.io-client";
+import { alarmCountState } from "../../states/userInfoState";
 
 interface InviteResultsModalItemProps {
   result: any;
@@ -18,7 +20,7 @@ function InviteResultsModalItem({
   removeInvitationById,
 }: InviteResultsModalItemProps) {
   const navigate = useNavigate();
-  console.log(result);
+  const [, setAlarmCount] = useRecoilState(alarmCountState);
   return (
     <div className="flex justify-between items-center gap-3">
       <div>
@@ -35,6 +37,7 @@ function InviteResultsModalItem({
               accepted: true,
             });
             closeModal();
+            setAlarmCount((prev) => prev - 1);
             removeInvitationById?.(result.invitationId);
             navigate("/main");
           }}
@@ -51,6 +54,7 @@ function InviteResultsModalItem({
               accepted: false,
             });
             closeModal();
+            setAlarmCount((prev) => prev - 1);
             removeInvitationById?.(result.invitationId);
           }}
         >
