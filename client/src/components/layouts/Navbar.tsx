@@ -16,12 +16,12 @@ import InviteResultsModalItem from "../modals/InviteResultModalItem";
 function Navbar({
   page,
   socket,
-  worksapceId,
+  workspaceId,
   removeInvitationById,
 }: {
   page?: string;
   socket?: Socket | null;
-  worksapceId?: string;
+  workspaceId?: string;
   removeInvitationById?: (invitationId: number) => void;
 }) {
   const navigate = useNavigate();
@@ -137,6 +137,7 @@ function Navbar({
               page={page}
               closeModal={createWorkspaceBoardModalClose}
               modalRef={createWorkspaceBoardModalRef}
+              workspaceId={workspaceId}
             />
           )}
         </div>
@@ -186,7 +187,7 @@ function Navbar({
                 <InviteResultsModalItem
                   key={index}
                   result={result}
-                  worksapceId={worksapceId}
+                  workspaceId={workspaceId}
                   socket={socket}
                   closeModal={inviteResultsModalClose}
                   removeInvitationById={removeInvitationById}

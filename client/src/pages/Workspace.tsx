@@ -205,7 +205,7 @@ function Workspace() {
     <Wrapper>
       <Navbar
         socket={socket}
-        worksapceId={workspaceId}
+        workspaceId={workspaceId}
         removeInvitationById={removeInvitationById}
       />
       <div className="flex w-full h-full overflow-auto">

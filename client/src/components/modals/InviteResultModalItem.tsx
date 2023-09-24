@@ -6,7 +6,7 @@ import { alarmCountState } from "../../states/userInfoState";
 
 interface InviteResultsModalItemProps {
   result: any;
-  worksapceId: string | undefined;
+  workspaceId: string | undefined;
   socket?: Socket | null;
   closeModal: () => void;
   removeInvitationById?: (invitationId: number) => void;
@@ -14,7 +14,7 @@ interface InviteResultsModalItemProps {
 
 function InviteResultsModalItem({
   result,
-  worksapceId,
+  workspaceId,
   socket,
   closeModal,
   removeInvitationById,
@@ -54,7 +54,7 @@ function InviteResultsModalItem({
           className=" bg-rose-400 text-white px-[6px] rounded-md"
           onClick={() => {
             socket?.emit("confirmInvitation", {
-              workspaceId: +worksapceId!,
+              workspaceId: +workspaceId!,
               invitationId: result.invitationId,
               InvitedByUserId: result.InvitedByUserId,
               accepted: false,
