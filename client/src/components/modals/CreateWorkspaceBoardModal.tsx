@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { useQuery } from "react-query";
 import { useRecoilState } from "recoil";
-import { getAPI, postAPI } from "../../axios";
+import { fetchUserData } from "../../api/userAPI";
+import { postAPI } from "../../axios";
 import { userWorkspacesBoardsState } from "../../states/userInfoState";
 
 type CreateWorkspaceBoardModalProps = {
@@ -22,11 +23,6 @@ const CreateWorkspaceBoardModal: React.FC<CreateWorkspaceBoardModalProps> = ({
   >(null);
   const [name, setName] = useState("");
   const [, setUserWorkspacesBoards] = useRecoilState(userWorkspacesBoardsState);
-
-  const fetchUserData = async () => {
-    const response = await getAPI("/api/users");
-    return response.data;
-  };
 
   const { refetch } = useQuery("userData", fetchUserData, {
     onSuccess: (data) => {

@@ -1,11 +1,11 @@
 import { useQuery } from "react-query";
 import Wrapper from "../components/Wrapper";
 import Navbar from "../components/layouts/Navbar";
-import { getAPI } from "../axios";
 import { useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { userWorkspacesBoardsState } from "../states/userInfoState";
 import Loading from "../components/layouts/Loading";
+import { fetchUserData } from "../api/userAPI";
 
 type Workspace = {
   Boards: Board[];
@@ -50,11 +50,6 @@ type MainCardProps = {
     startColor?: string;
     endColor?: string;
   };
-};
-
-const fetchUserData = async () => {
-  const response = await getAPI("/api/users");
-  return response.data;
 };
 
 function Main() {

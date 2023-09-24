@@ -24,9 +24,10 @@ import { userWorkspacesBoardsState } from "../states/userInfoState";
 import { getBoardBackgroundStyle } from "../utils/boardStyles";
 import ColumnHeader from "./ColumnHeader";
 import { findBoardById } from "../utils/findBoardById";
-import { getAPI, putAPI } from "../axios";
+import { putAPI } from "../axios";
 import { WorkspaceType } from "../types/WorkspacesBoards";
 import Loading from "./layouts/Loading";
+import { fetchUserData } from "../api/userAPI";
 
 type BoardProps = {
   boardId: string;
@@ -128,11 +129,6 @@ function Board({ boardId, openModal }: BoardProps) {
       }
     });
   }, [workspaceId, boardId, refetchColumn, fetchedColumns]);
-
-  const fetchUserData = async () => {
-    const response = await getAPI("/api/users");
-    return response.data;
-  };
 
   const { refetch: refetchUserWorkspacesBoards } = useQuery(
     "userData",

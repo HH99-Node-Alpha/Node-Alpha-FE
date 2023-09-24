@@ -18,6 +18,7 @@ import { useQuery } from "react-query";
 import UserSearchModal from "../components/modals/UserSearchModal";
 import { io, Socket } from "socket.io-client";
 import { determineBackgroundStyle } from "../utils/boardStyles";
+import { fetchUserData } from "../api/userAPI";
 
 export interface InviteResult {
   invitationId: number;
@@ -88,11 +89,6 @@ function Workspace() {
       socket.off("loginAndAlarm");
     };
   }, [socket, setInviteResults, setAlarmCount]);
-
-  const fetchUserData = async () => {
-    const response = await getAPI("/api/users");
-    return response.data;
-  };
 
   const { refetch } = useQuery("userData", fetchUserData, {
     onSuccess: (data) => {
