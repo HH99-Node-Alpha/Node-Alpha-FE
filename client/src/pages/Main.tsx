@@ -54,35 +54,36 @@ type MainCardProps = {
 
 function Main() {
   const [, setUserWorkspacesBoards] = useRecoilState(userWorkspacesBoardsState);
-  const { data, isLoading, isError } = useQuery("userData", fetchUserData, {
+  const { data, isLoading } = useQuery("userData", fetchUserData, {
     onSuccess: (data) => {
       setUserWorkspacesBoards(data);
     },
   });
   const workspaces: Workspace[] = data || [];
 
-  if (isLoading) return <Loading />;
-  if (isError) return <p>서버 에러</p>;
-
   return (
     <Wrapper>
       <Navbar page="main" />
-      <div className="flex w-full h-full overflow-auto justify-center items-center">
-        <div className=" w-7/12 h-5/6 bg-[#1D2125] rounded-lg flex flex-col items-center overflow-auto">
-          <h1 className="w-full h-16 py-2 border-b-2 border-white flex items-center text-white px-4 ">
-            하이!
-          </h1>
-          <Section
-            title="My Workspaces"
-            items={workspaces.map((workspace: Workspace) => ({
-              id: workspace.workspaceId,
-              name: workspace.workspaceName,
-              workspaceId: workspace.workspaceId,
-              boards: workspace.Boards,
-            }))}
-          />
+      {isLoading ? (
+        <Loading />
+      ) : (
+        <div className="flex w-full h-full overflow-auto justify-center items-center">
+          <div className=" w-7/12 h-5/6 bg-[#1D2125] rounded-lg flex flex-col items-center overflow-auto">
+            <h1 className="w-full h-16 py-2 border-b-2 border-white flex items-center text-white px-4 ">
+              하이!
+            </h1>
+            <Section
+              title="My Workspaces"
+              items={workspaces.map((workspace: Workspace) => ({
+                id: workspace.workspaceId,
+                name: workspace.workspaceName,
+                workspaceId: workspace.workspaceId,
+                boards: workspace.Boards,
+              }))}
+            />
+          </div>
         </div>
-      </div>
+      )}
     </Wrapper>
   );
 }

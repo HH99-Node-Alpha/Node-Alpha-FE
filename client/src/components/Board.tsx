@@ -314,117 +314,125 @@ function Board({ boardId, openModal }: BoardProps) {
 
   return (
     <div className="h-full w-full flex flex-col" style={backgroundStyle}>
-      <BoardHeader
-        boardName={board?.boardName || ""}
-        toggleSidebar={() => setRightSidebarOpen(!rightSidebarOpen)}
-        onBoardNameChange={handleBoardNameChange}
-      />
+      {isLoading ? (
+        <Loading />
+      ) : (
+        <>
+          <BoardHeader
+            boardName={board?.boardName || ""}
+            toggleSidebar={() => setRightSidebarOpen(!rightSidebarOpen)}
+            onBoardNameChange={handleBoardNameChange}
+          />
 
-      <DragDropContext onDragEnd={onDragEnd}>
-        <Droppable
-          droppableId="all-columns"
-          direction="horizontal"
-          type="column"
-        >
-          {(provided) => (
-            <div
-              className="flex gap-2 p-4"
-              ref={provided.innerRef}
-              {...provided.droppableProps}
+          <DragDropContext onDragEnd={onDragEnd}>
+            <Droppable
+              droppableId="all-columns"
+              direction="horizontal"
+              type="column"
             >
-              {columns?.map((column, index) => (
-                <Draggable
-                  key={column.columnId}
-                  draggableId={column.columnId}
-                  index={index}
+              {(provided) => (
+                <div
+                  className="flex gap-2 p-4"
+                  ref={provided.innerRef}
+                  {...provided.droppableProps}
                 >
-                  {(provided) => (
-                    <div
-                      ref={provided.innerRef}
-                      {...provided.draggableProps}
-                      {...provided.dragHandleProps}
+                  {columns?.map((column, index) => (
+                    <Draggable
+                      key={column.columnId}
+                      draggableId={column.columnId}
+                      index={index}
                     >
-                      <Droppable
-                        droppableId={column.columnId}
-                        key={column.columnId}
-                      >
-                        {(provided, snapshot) => (
-                          <div
-                            ref={provided.innerRef}
-                            {...provided.droppableProps}
-                            style={{
-                              ...getColumnStyle(snapshot.isDraggingOver),
-                            }}
+                      {(provided) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                        >
+                          <Droppable
+                            droppableId={column.columnId}
+                            key={column.columnId}
                           >
-                            <ColumnHeader
-                              isEditing={editingColumnId === column.columnId}
-                              editedColumnName={editedColumnName}
-                              onEditBlur={handleColumnNameUpdate}
-                              onEditChange={handleColumnNameChange}
-                              onEditKeyDown={handleColumnUpdateOnEnter}
-                              onStartEdit={() => {
-                                setEditingColumnId(column.columnId);
-                                setEditedColumnName(column.columnName);
-                              }}
-                              onDelete={() => deleteColumn(column.columnId)}
-                              columnId={column.columnId}
-                              columnName={column.columnName}
-                            />
-                            {column.cards?.map((card, index) => (
-                              <Draggable
-                                key={card.cardId}
-                                draggableId={card.cardId}
-                                index={index}
+                            {(provided, snapshot) => (
+                              <div
+                                ref={provided.innerRef}
+                                {...provided.droppableProps}
+                                style={{
+                                  ...getColumnStyle(snapshot.isDraggingOver),
+                                }}
                               >
-                                {(provided, snapshot) => (
-                                  <div
-                                    ref={provided.innerRef}
-                                    {...provided.draggableProps}
-                                    {...provided.dragHandleProps}
-                                    style={{
-                                      ...getCardStyle(
-                                        snapshot.isDragging,
-                                        provided.draggableProps.style || {}
-                                      ),
-                                    }}
+                                <ColumnHeader
+                                  isEditing={
+                                    editingColumnId === column.columnId
+                                  }
+                                  editedColumnName={editedColumnName}
+                                  onEditBlur={handleColumnNameUpdate}
+                                  onEditChange={handleColumnNameChange}
+                                  onEditKeyDown={handleColumnUpdateOnEnter}
+                                  onStartEdit={() => {
+                                    setEditingColumnId(column.columnId);
+                                    setEditedColumnName(column.columnName);
+                                  }}
+                                  onDelete={() => deleteColumn(column.columnId)}
+                                  columnId={column.columnId}
+                                  columnName={column.columnName}
+                                />
+                                {column.cards?.map((card, index) => (
+                                  <Draggable
+                                    key={card.cardId}
+                                    draggableId={card.cardId}
+                                    index={index}
                                   >
-                                    {card.cardName}
-                                  </div>
-                                )}
-                              </Draggable>
-                            ))}
-                            <button
-                              onClick={() => addCard(column.columnId)}
-                              className="bg-white py-2 w-[288px] rounded text-black"
-                            >
-                              +
-                            </button>
-                            {provided.placeholder}
-                          </div>
-                        )}
-                      </Droppable>
-                    </div>
-                  )}
-                </Draggable>
-              ))}
-              <NewColumnInput
-                isInputMode={isInputMode}
-                columnName={columnName}
-                setColumnName={setColumnName}
-                addNewColumn={addNewColumn}
-                toggleInputMode={() => setInputMode(!isInputMode)}
-              />
-              {provided.placeholder}
-            </div>
+                                    {(provided, snapshot) => (
+                                      <div
+                                        ref={provided.innerRef}
+                                        {...provided.draggableProps}
+                                        {...provided.dragHandleProps}
+                                        style={{
+                                          ...getCardStyle(
+                                            snapshot.isDragging,
+                                            provided.draggableProps.style || {}
+                                          ),
+                                        }}
+                                      >
+                                        {card.cardName}
+                                      </div>
+                                    )}
+                                  </Draggable>
+                                ))}
+                                <button
+                                  onClick={() => addCard(column.columnId)}
+                                  className="bg-white py-2 w-[288px] rounded text-black"
+                                >
+                                  +
+                                </button>
+                                {provided.placeholder}
+                              </div>
+                            )}
+                          </Droppable>
+                        </div>
+                      )}
+                    </Draggable>
+                  ))}
+                  <NewColumnInput
+                    isInputMode={isInputMode}
+                    columnName={columnName}
+                    setColumnName={setColumnName}
+                    addNewColumn={addNewColumn}
+                    toggleInputMode={() => setInputMode(!isInputMode)}
+                  />
+                  {provided.placeholder}
+                </div>
+              )}
+            </Droppable>
+          </DragDropContext>
+          {rightSidebarOpen && (
+            <RightSidebar
+              closeSidebar={() => setRightSidebarOpen(false)}
+              isOpen={rightSidebarOpen}
+              openModal={openModal}
+            />
           )}
-        </Droppable>
-      </DragDropContext>
-      {rightSidebarOpen && (
-        <RightSidebar
-          closeSidebar={() => setRightSidebarOpen(false)}
-          isOpen={rightSidebarOpen}
-          openModal={openModal}
-        />
+        </>
       )}
     </div>
   );
