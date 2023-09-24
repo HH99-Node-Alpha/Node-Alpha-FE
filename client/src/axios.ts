@@ -24,17 +24,13 @@ axios.interceptors.response.use(
   },
   async (error) => {
     const originalRequest = error.config;
-    if (
-      error.response.status === 401 &&
-      !originalRequest._retry &&
-      originalRequest.url !== `${API_BASE_URL}/api/refresh`
-    ) {
+    if (error.response.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
       const refreshResponse = await axios.post(`${API_BASE_URL}/api/refresh`);
       const newToken = refreshResponse.data.newAccessToken;
-
       originalRequest.headers["Authorization"] = `Bearer ${newToken}`;
+      Cookies.set("Authorization", `Bearer ${newToken}`);
       return axios(originalRequest);
     }
     return Promise.reject(error);
