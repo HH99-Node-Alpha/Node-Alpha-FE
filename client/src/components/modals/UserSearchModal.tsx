@@ -1,13 +1,8 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { BsSearch } from "react-icons/bs";
 import { useQuery } from "react-query";
-import { useRecoilState } from "recoil";
 import { Socket } from "socket.io-client";
 import { getAPI } from "../../axios";
-import {
-  alarmCountState,
-  inviteResultsState,
-} from "../../states/userInfoState";
 
 interface UserSearchModalProps {
   userSearchModalRef: any;
@@ -24,8 +19,6 @@ const UserSearchModal: React.FC<UserSearchModalProps> = ({
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const currentUser = JSON.parse(localStorage.getItem("user") || "{}");
-  const [, setInviteResults] = useRecoilState(inviteResultsState);
-  const [, setAlarmCount] = useRecoilState(alarmCountState);
   const fetchUsers = async (queryKey: any) => {
     const query = queryKey.queryKey[1];
     const result = await getAPI(
@@ -41,18 +34,6 @@ const UserSearchModal: React.FC<UserSearchModalProps> = ({
       enabled: searchTerm.length > 0,
     }
   );
-
-  useEffect(() => {
-    if (!socket) return;
-    socket.on("invite", (data) => {
-      console.log(data);
-      setInviteResults((prev) => [...prev, data]);
-      setAlarmCount((prev) => prev + 1);
-    });
-    return () => {
-      socket.off("invite");
-    };
-  });
 
   const addMember = (invitedByUserId: number) => {
     socket?.emit("invite", {
