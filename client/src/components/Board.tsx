@@ -9,10 +9,10 @@ import { useQuery } from "react-query";
 import { useParams } from "react-router-dom";
 import {
   addNewColumnAPI,
+  deleteColumnAPI,
   getColumnsAPI,
   updateColumnAPI,
 } from "../api/boardAPI";
-import { deleteAPI, putAPI } from "../axios";
 import { io, Socket } from "socket.io-client";
 import { TCard, TColumn } from "../types/dnd";
 import { getCardStyle, getColumnStyle } from "../utils/dnd";
@@ -155,10 +155,12 @@ function Board({ boardId, openModal }: BoardProps) {
   };
 
   const handleColumnNameUpdate = async () => {
-    await putAPI(
-      `/api/workspaces/${workspaceId}/boards/${boardId}/columns/${editingColumnId}`,
-      { columnName: editedColumnName }
-    );
+    if (editingColumnId) {
+      await updateColumnAPI(workspaceId!, boardId, editingColumnId, {
+        columnName: editedColumnName,
+      });
+    }
+
     if (socket) {
       socket.emit("changeToServer", {
         columnId: editingColumnId,
@@ -170,9 +172,7 @@ function Board({ boardId, openModal }: BoardProps) {
   };
 
   const deleteColumn = async (columnId: string) => {
-    await deleteAPI(
-      `/api/workspaces/${workspaceId}/boards/${boardId}/columns/${columnId}`
-    );
+    await deleteColumnAPI(workspaceId!, boardId, columnId);
     if (socket) {
       socket.emit("deleteToServer", {
         columnId,
