@@ -7,7 +7,11 @@ import {
 } from "react-beautiful-dnd";
 import { useQuery } from "react-query";
 import { useParams } from "react-router-dom";
-import { addNewColumnAPI, getColumnsAPI } from "../api/boardAPI";
+import {
+  addNewColumnAPI,
+  getColumnsAPI,
+  updateColumnAPI,
+} from "../api/boardAPI";
 import { deleteAPI, putAPI } from "../axios";
 import { io, Socket } from "socket.io-client";
 import { TCard, TColumn } from "../types/dnd";
@@ -18,7 +22,8 @@ import RightSidebar from "./layouts/RightSidebar";
 import { useRecoilValue } from "recoil";
 import { userWorkspacesBoardsState } from "../states/userInfoState";
 import { getBoardBackgroundStyle } from "../utils/boardStyles";
-import { LuDelete } from "react-icons/lu";
+import ColumnHeader from "./ColumnHeader";
+import { findBoardById } from "../utils/findBoardById";
 
 type BoardProps = {
   boardId: string;
@@ -37,16 +42,8 @@ function Board({ boardId, openModal }: BoardProps) {
   const [editingColumnId, setEditingColumnId] = useState<string | null>(null);
   const userWorkspacesBoards = useRecoilValue(userWorkspacesBoardsState);
 
-  const findBoardById = (boards: any[], id: string) => {
-    for (const workspace of boards) {
-      const foundBoard = workspace.Boards.find(
-        (board: any) => board.boardId.toString() === id
-      );
-      if (foundBoard) return foundBoard;
-    }
-    return null;
-  };
   const board = findBoardById(userWorkspacesBoards, boardId);
+  const backgroundStyle = getBoardBackgroundStyle(board);
 
   // socket연결
   useEffect(() => {
@@ -113,9 +110,7 @@ function Board({ boardId, openModal }: BoardProps) {
   } = useQuery(
     ["columns", workspaceId, boardId],
     () => getColumnsAPI(workspaceId!, boardId),
-    {
-      enabled: false,
-    }
+    { enabled: false }
   );
 
   useEffect(() => {
@@ -232,10 +227,10 @@ function Board({ boardId, openModal }: BoardProps) {
           columnOrder: movedColumn.columnOrder,
         });
       }
-      await putAPI(
-        `/api/workspaces/${workspaceId}/boards/${boardId}/columns/${movedColumn.columnId}`,
-        { columnOrder: movedColumn.columnOrder }
-      );
+      await updateColumnAPI(workspaceId!, boardId, movedColumn.columnId, {
+        columnOrder: movedColumn.columnOrder,
+      });
+
       return;
     }
 
@@ -295,8 +290,6 @@ function Board({ boardId, openModal }: BoardProps) {
     return <div>로딩 중...</div>;
   }
 
-  const backgroundStyle = getBoardBackgroundStyle(board);
-
   return (
     <div className="h-full w-full flex flex-col" style={backgroundStyle}>
       <BoardHeader
@@ -340,33 +333,20 @@ function Board({ boardId, openModal }: BoardProps) {
                               ...getColumnStyle(snapshot.isDraggingOver),
                             }}
                           >
-                            {editingColumnId === column.columnId ? (
-                              <input
-                                autoFocus
-                                value={editedColumnName}
-                                onBlur={handleColumnNameUpdate}
-                                onChange={handleColumnNameChange}
-                                onKeyDown={handleColumnUpdateOnEnter}
-                                className="w-full h-8 px-2 bg-[#22272B] rounded-md mb-2 text-white outline-none"
-                              />
-                            ) : (
-                              <h2 className="text-white mb-2 h-8 flex items-center px-2 w-full justify-between">
-                                <div
-                                  className="w-full"
-                                  onClick={() => {
-                                    setEditingColumnId(column.columnId);
-                                    setEditedColumnName(column.columnName);
-                                  }}
-                                >
-                                  {column.columnName}
-                                </div>
-                                <button
-                                  onClick={(e) => deleteColumn(column.columnId)}
-                                >
-                                  <LuDelete />
-                                </button>
-                              </h2>
-                            )}
+                            <ColumnHeader
+                              isEditing={editingColumnId === column.columnId}
+                              editedColumnName={editedColumnName}
+                              onEditBlur={handleColumnNameUpdate}
+                              onEditChange={handleColumnNameChange}
+                              onEditKeyDown={handleColumnUpdateOnEnter}
+                              onStartEdit={() => {
+                                setEditingColumnId(column.columnId);
+                                setEditedColumnName(column.columnName);
+                              }}
+                              onDelete={() => deleteColumn(column.columnId)}
+                              columnId={column.columnId}
+                              columnName={column.columnName}
+                            />
                             {column.cards?.map((card, index) => (
                               <Draggable
                                 key={card.cardId}
