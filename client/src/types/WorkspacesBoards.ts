@@ -14,6 +14,7 @@ export interface BoardType {
 export interface WorkspaceType {
   workspaceId: number;
   workspaceName?: string;
+  ownerId?: number;
   Boards: BoardType[];
 }
 

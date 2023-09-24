@@ -24,9 +24,8 @@ function LeftSidebar({
   const workspace = userWorkspacesBoardSpaces.find(
     (item) => item.workspaceId === Number(workspaceId)
   );
-
   const boards = workspace?.Boards;
-
+  const currentUser = JSON.parse(localStorage.getItem("user") || "{}");
   return (
     <>
       <div className="h-full min-w-[320px] bg-[#161A1E]">
@@ -40,7 +39,9 @@ function LeftSidebar({
             <div className="text-white">{workspace?.workspaceName}</div>
           </div>
           <button className="text-white w-[20px] h-full">
-            <AiOutlineSetting size={20} />
+            {workspace?.ownerId === currentUser.userId && (
+              <AiOutlineSetting size={20} />
+            )}
           </button>
         </div>
         <button
@@ -53,12 +54,12 @@ function LeftSidebar({
           </div>
           <div className="flex h-full items-center">+</div>
         </button>
-        <button className="w-full h-10 flex justify-between p-4 text-white hover:bg-[#2C3238]">
+        <div className="w-full h-10 flex justify-between p-4 text-white cursor-default">
           <div className="flex h-full gap-4 items-center">
             <span>Your boards</span>
           </div>
-          <div className="flex h-full items-center">+</div>
-        </button>
+          <div className="flex h-full items-center"></div>
+        </div>
         <div>
           {boards?.map((board: BoardType) => (
             <button
