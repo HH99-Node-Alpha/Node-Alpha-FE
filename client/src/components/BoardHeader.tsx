@@ -58,7 +58,12 @@ const BoardHeader: React.FC<HeaderProps> = ({
         )}
       </div>
       <div className="flex gap-4">
-        <button className="flex justify-center items-center gap-2 h-10 w-28 rounded-md px-2 hover:bg-[#2C3238]">
+        <button
+          onClick={() => {
+            alert("아직 준비중인 기능입니다!");
+          }}
+          className="flex justify-center items-center gap-2 h-10 w-28 rounded-md px-2 hover:bg-[#2C3238]"
+        >
           <BsPersonPlus />
           <span>share</span>
         </button>
