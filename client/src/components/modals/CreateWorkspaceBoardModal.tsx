@@ -6,6 +6,7 @@ import { userWorkspacesBoardsState } from "../../states/userInfoState";
 
 type CreateWorkspaceBoardModalProps = {
   page?: string;
+  workspaceId?: string;
   closeModal: () => void;
   modalRef: React.RefObject<HTMLDivElement>;
 };
@@ -14,6 +15,7 @@ const CreateWorkspaceBoardModal: React.FC<CreateWorkspaceBoardModalProps> = ({
   page,
   closeModal,
   modalRef,
+  workspaceId,
 }) => {
   const [selectedType, setSelectedType] = useState<
     "workspace" | "board" | null
@@ -70,7 +72,7 @@ const CreateWorkspaceBoardModal: React.FC<CreateWorkspaceBoardModalProps> = ({
                       workspaceName: name,
                     });
                   } else {
-                    await postAPI("/api/workspaces/1/boards", {
+                    await postAPI(`/api/workspaces/${workspaceId}/boards`, {
                       boardName: name,
                     });
                   }
