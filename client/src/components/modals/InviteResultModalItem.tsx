@@ -37,7 +37,13 @@ function InviteResultsModalItem({
               accepted: true,
             });
             closeModal();
-            setAlarmCount((prev) => prev - 1);
+            setAlarmCount((prev) => {
+              if (prev) {
+                return prev - 1;
+              } else {
+                return 0;
+              }
+            });
             removeInvitationById?.(result.invitationId);
             navigate("/main");
           }}
@@ -54,7 +60,13 @@ function InviteResultsModalItem({
               accepted: false,
             });
             closeModal();
-            setAlarmCount((prev) => prev - 1);
+            setAlarmCount((prev) => {
+              if (prev) {
+                return prev - 1;
+              } else {
+                return 0;
+              }
+            });
             removeInvitationById?.(result.invitationId);
           }}
         >

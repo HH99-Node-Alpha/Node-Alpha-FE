@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import useModal from "../hooks/useModal";
 import { useRecoilState } from "recoil";
 import {
+  alarmCountState,
   inviteResultsState,
   userWorkspacesBoardsState,
 } from "../states/userInfoState";
@@ -51,7 +52,7 @@ function Workspace() {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [, setInviteResults] =
     useRecoilState<InviteResult[]>(inviteResultsState);
-
+  const [, setAlarmCount] = useRecoilState(alarmCountState);
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user")!);
     if (!user) {
@@ -78,13 +79,14 @@ function Workspace() {
     socket.on("loginAndAlarm", (data: any) => {
       if (data.inviteResult && Array.isArray(data.inviteResult)) {
         setInviteResults(data.inviteResult);
+        setAlarmCount(data.inviteResult.length);
       }
     });
 
     return () => {
       socket.off("loginAndAlarm");
     };
-  }, [socket, setInviteResults]);
+  }, [socket, setInviteResults, setAlarmCount]);
 
   const fetchUserData = async () => {
     const response = await getAPI("/api/users");

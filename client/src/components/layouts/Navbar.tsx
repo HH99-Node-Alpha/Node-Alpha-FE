@@ -71,7 +71,6 @@ function Navbar({
   useEffect(() => {
     if (!socket) return;
     socket.on("invite", (data) => {
-      console.log(data);
       setInviteResults((prev) => [...prev, data]);
       setAlarmCount((prev) => prev + 1);
     });
@@ -146,14 +145,23 @@ function Navbar({
             <>
               <div
                 className="flex justify-center items-center text-white cursor-pointer relative"
-                onClick={inviteResultsModalOpen}
+                onClick={() => {
+                  setAlarmCount(0);
+                  inviteResultsModalOpen();
+                }}
               >
                 <GoBell size={24} />
               </div>
               {alarmCount !== 0 && (
-                <div className="absolute right-[64px] top-0 bg-red-600 text-sm px-[6px] text-white rounded-full">
+                <button
+                  onClick={() => {
+                    setAlarmCount(0);
+                    inviteResultsModalOpen();
+                  }}
+                  className="absolute right-[64px] top-0 bg-red-600 text-sm px-[6px] text-white rounded-full"
+                >
                   {alarmCount}
-                </div>
+                </button>
               )}
             </>
           )}
