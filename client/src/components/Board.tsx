@@ -79,7 +79,7 @@ function Board({ boardId, openModal }: BoardProps) {
 
   useEffect(() => {
     if (!socket) return;
-    socket.on("changeToClient", ({ columnId, columnOrder, columnName }) => {
+    socket.on("updateColumn", ({ columnId, columnOrder, columnName }) => {
       setColumns((prevColumns) => {
         const updatedColumns = prevColumns.map((column) => {
           if (column.columnId === columnId) {
@@ -91,20 +91,20 @@ function Board({ boardId, openModal }: BoardProps) {
       });
     });
 
-    socket.on("addToClient", (data) => {
+    socket.on("addColumn", (data) => {
       addColumn(data.columnId, data.columnName, data.columnOrder);
     });
 
-    socket.on("deleteToClient", ({ columnId }) => {
+    socket.on("deleteColumn", ({ columnId }) => {
       setColumns((prevColumns) => {
         return prevColumns.filter((column) => column.columnId !== columnId);
       });
     });
 
     return () => {
-      socket.off("changeToClient");
-      socket.off("addToClient");
-      socket.off("deleteToClient");
+      socket.off("updateColumn");
+      socket.off("addColumn");
+      socket.off("deleteColumn");
     };
   }, [socket, columns, addColumn]);
 
