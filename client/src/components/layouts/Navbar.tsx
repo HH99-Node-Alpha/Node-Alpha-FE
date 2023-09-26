@@ -42,7 +42,7 @@ function Navbar({
   const {
     isOpen: inviteResultsModalIsOpen,
     modalRef: inviteResultsModalRef,
-    openModal: inviteResultsModalOpen,
+    openModal: _inviteResultsModalOpen,
     closeModal: inviteResultsModalClose,
   } = useModal();
 
@@ -64,6 +64,14 @@ function Navbar({
     };
   });
 
+  const inviteResultsModalOpen = () => {
+    _inviteResultsModalOpen();
+    if (socket) {
+      const invitationIds = inviteResults.map((result) => result.invitationId);
+      socket.emit("notification", invitationIds);
+    }
+  };
+
   const logout = async () => {
     await postAPI("/api/logout", {});
   };
@@ -74,10 +82,20 @@ function Navbar({
       setInviteResults((prev) => [...prev, data]);
       setAlarmCount((prev) => prev + 1);
     });
+
+    socket.on("notification", (changedInvitations) => {
+      setInviteResults(changedInvitations);
+      const unreadCount = changedInvitations.reduce(
+        (acc: number, invitation: any) => acc + (invitation.isRead ? 0 : 1),
+        0
+      );
+      setAlarmCount(unreadCount);
+    });
     return () => {
       socket.off("invite");
+      socket.off("notification");
     };
-  });
+  }, [socket, setInviteResults, setAlarmCount]);
 
   return (
     <>
