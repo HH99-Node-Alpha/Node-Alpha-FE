@@ -12,9 +12,11 @@ import {
 function LeftSidebar({
   workspaceId,
   openUserSearchModal,
+  openEditWorkspaceModal,
 }: {
   workspaceId: string;
   openUserSearchModal: () => void;
+  openEditWorkspaceModal: () => void;
 }) {
   const navigate = useNavigate();
   const userWorkspacesBoardSpaces: UserWorkspacesBoardSpaces = useRecoilValue(
@@ -38,7 +40,10 @@ function LeftSidebar({
             />
             <div className="text-white">{workspace?.workspaceName}</div>
           </div>
-          <button className="text-white w-[20px] h-full">
+          <button
+            className="text-white w-[20px] h-full"
+            onClick={openEditWorkspaceModal}
+          >
             {workspace?.ownerId === currentUser.userId && (
               <AiOutlineSetting size={20} />
             )}

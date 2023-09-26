@@ -1,24 +1,28 @@
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useRecoilState } from "recoil";
+import { getAPI, putAPI } from "../axios";
+import { io, Socket } from "socket.io-client";
+import { useQuery } from "react-query";
+
 import Board from "../components/Board";
 import Wrapper from "../components/layouts/Wrapper";
 import Navbar from "../components/layouts/Navbar";
 import LeftSidebar from "../components/layouts/LeftSidebar";
-import { useEffect, useState } from "react";
+import ChangeBoardColorModal from "../components/modals/ChangeBoardColorModal";
+import UserSearchModal from "../components/modals/UserSearchModal";
 import useModal from "../hooks/useModal";
-import { useRecoilState } from "recoil";
+
 import {
   alarmCountState,
   inviteResultsState,
   userWorkspacesBoardsState,
 } from "../states/userInfoState";
-import { getAPI, putAPI } from "../axios";
+
 import { BoardType, ColorType, WorkspaceType } from "../types/WorkspacesBoards";
-import ChangeBoardColorModal from "../components/modals/ChangeBoardColorModal";
-import { useQuery } from "react-query";
-import UserSearchModal from "../components/modals/UserSearchModal";
-import { io, Socket } from "socket.io-client";
 import { determineBackgroundStyle } from "../utils/boardStyles";
 import { fetchUserData } from "../api/userAPI";
+import EditWorkspaceModal from "../components/modals/EditWorkspaceModal";
 
 export interface InviteResult {
   invitationId: number;
@@ -39,14 +43,15 @@ function Workspace() {
     closeModal: closeUserSearchModal,
   } = useModal();
   const navigate = useNavigate();
+
   const [selectedBackground, setSelectedBackground] =
     useState<ColorType | null>(null);
   const [backgrounds, setBackgrounds] = useState<ColorType[]>([]);
   const [tempSelectedBackground, setTempSelectedBackground] =
     useState<ColorType | null>(null);
-
   const [currentBoardBackground, setCurrentBoardBackground] =
     useState<ColorType | null>(null);
+
   const [userWorkspacesBoards, setUserWorkspacesBoards] = useRecoilState<
     WorkspaceType[]
   >(userWorkspacesBoardsState);
@@ -55,6 +60,14 @@ function Workspace() {
   const [, setInviteResults] =
     useRecoilState<InviteResult[]>(inviteResultsState);
   const [, setAlarmCount] = useRecoilState(alarmCountState);
+
+  const {
+    isOpen: isEditWorkspaceModalOpen,
+    modalRef: editWorkspaceModalRef,
+    openModal: openEditWorkspaceModal,
+    closeModal: closeEditWorkspaceModal,
+  } = useModal();
+
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user")!);
     if (!user) {
@@ -176,7 +189,6 @@ function Workspace() {
   const previewBackgroundStyle = determineBackgroundStyle(
     tempSelectedBackground || currentBoardBackground
   );
-
   return (
     <Wrapper>
       <Navbar
@@ -188,6 +200,7 @@ function Workspace() {
         <LeftSidebar
           workspaceId={workspaceId!}
           openUserSearchModal={openUserSearchModal}
+          openEditWorkspaceModal={openEditWorkspaceModal}
         />
         <Board boardId={boardId!} openModal={openModal} />
       </div>
@@ -195,6 +208,14 @@ function Workspace() {
         <UserSearchModal
           userSearchModalRef={userSearchModalRef}
           closeUserSearchModal={closeUserSearchModal}
+          socket={socket}
+          workspaceId={workspaceId!}
+        />
+      )}
+      {isEditWorkspaceModalOpen && (
+        <EditWorkspaceModal
+          modalRef={editWorkspaceModalRef}
+          closeModal={closeEditWorkspaceModal}
           socket={socket}
           workspaceId={workspaceId!}
         />
