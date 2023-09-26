@@ -31,9 +31,9 @@ function InviteResultsModalItem({
           className=" bg-blue-500 text-white px-[6px] rounded-md"
           onClick={() => {
             socket?.emit("confirmInvitation", {
-              WorkspaceId: +result.WorkspaceId!,
+              workspaceId: +result.workspaceId!,
               invitationId: result.invitationId,
-              InvitedByUserId: result.InvitedByUserId,
+              invitedByUserId: result.userId,
               accepted: true,
             });
             closeModal();
@@ -54,9 +54,9 @@ function InviteResultsModalItem({
           className=" bg-rose-400 text-white px-[6px] rounded-md"
           onClick={() => {
             socket?.emit("confirmInvitation", {
-              workspaceId: +workspaceId!,
+              workspaceId: +result.workspaceId!,
               invitationId: result.invitationId,
-              InvitedByUserId: result.InvitedByUserId,
+              invitedByUserId: result.invitedByUserId,
               accepted: false,
             });
             closeModal();
