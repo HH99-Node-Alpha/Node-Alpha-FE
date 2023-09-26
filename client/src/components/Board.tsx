@@ -17,7 +17,7 @@ import { io, Socket } from "socket.io-client";
 import { TCard, TColumn } from "../types/dnd";
 import { getCardStyle, getColumnStyle } from "../utils/dnd";
 import BoardHeader from "./BoardHeader";
-import NewColumnInput from "./NewColumnInput";
+import NewColumnInput from "./inputs/NewColumnInput";
 import RightSidebar from "./layouts/RightSidebar";
 import { useRecoilState } from "recoil";
 import { userWorkspacesBoardsState } from "../states/userInfoState";

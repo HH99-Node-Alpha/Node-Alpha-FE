@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from "react-router-dom";
 import Board from "../components/Board";
-import Wrapper from "../components/Wrapper";
+import Wrapper from "../components/layouts/Wrapper";
 import Navbar from "../components/layouts/Navbar";
 import LeftSidebar from "../components/layouts/LeftSidebar";
 import { useEffect, useState } from "react";

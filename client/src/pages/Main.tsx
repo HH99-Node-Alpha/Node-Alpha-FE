@@ -1,5 +1,5 @@
 import { useQuery } from "react-query";
-import Wrapper from "../components/Wrapper";
+import Wrapper from "../components/layouts/Wrapper";
 import Navbar from "../components/layouts/Navbar";
 import { useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";

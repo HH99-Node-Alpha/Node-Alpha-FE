@@ -1,5 +1,5 @@
 import { useState, ChangeEvent, FC } from "react";
-import SignupInput from "../components/SignupInput";
+import SignupInput from "../components/inputs/SignupInput";
 import { postAPI } from "../axios";
 import { useNavigate } from "react-router-dom";
 
