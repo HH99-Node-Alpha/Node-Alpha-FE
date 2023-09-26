@@ -34,11 +34,12 @@ const EditWorkspaceModal: React.FC<EditWorkspaceModalProps> = ({
     if (e.target.files && e.target.files.length > 0) {
       const fileURL = URL.createObjectURL(e.target.files[0]);
       setPreview(fileURL);
+      setNewWorkspaceImage("");
     }
   };
 
   const [name, setName] = useState(targetWorkspace?.workspaceName || "");
-  const [backgroundUrl, setBackgroundUrl] = useState(
+  const [newWorkspaceImage, setNewWorkspaceImage] = useState(
     targetWorkspace?.workspaceImage || ""
   );
 
@@ -46,7 +47,7 @@ const EditWorkspaceModal: React.FC<EditWorkspaceModalProps> = ({
     try {
       const response = await putAPI(`/api/workspaces/${workspaceId}`, {
         workspaceName: name,
-        workspaceImage: backgroundUrl,
+        workspaceImage: newWorkspaceImage,
       });
 
       if (response.status === 200) {
@@ -56,7 +57,7 @@ const EditWorkspaceModal: React.FC<EditWorkspaceModalProps> = ({
               ? {
                   ...workspace,
                   workspaceName: name,
-                  workspaceImage: backgroundUrl,
+                  workspaceImage: newWorkspaceImage,
                 }
               : workspace
           )
