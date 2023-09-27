@@ -5,6 +5,7 @@ const API_BASE_URL = `${process.env.REACT_APP_SERVER_URL}`;
 
 axios.interceptors.request.use(
   (config) => {
+    console.log(process.env.REACT_APP_SERVER_URL);
     const token = Cookies.get("accessToken");
     if (token) {
       config.headers["Authorization"] = `Bearer ${token}`;
