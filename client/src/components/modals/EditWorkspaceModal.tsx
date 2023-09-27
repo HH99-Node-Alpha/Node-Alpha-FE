@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useRecoilState } from "recoil";
 import { Socket } from "socket.io-client";
-import { putAPI } from "../../axios";
+import { postAPI, putAPI } from "../../axios";
 import { userWorkspacesBoardsState } from "../../states/userInfoState";
 import { WorkspaceType } from "../../types/WorkspacesBoards";
 
@@ -30,18 +30,22 @@ const EditWorkspaceModal: React.FC<EditWorkspaceModalProps> = ({
       `${process.env.PUBLIC_URL}/assets/dev-jeans.png`
   );
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const fileURL = URL.createObjectURL(e.target.files[0]);
-      setPreview(fileURL);
-      setNewWorkspaceImage("");
-    }
-  };
-
   const [name, setName] = useState(targetWorkspace?.workspaceName || "");
   const [newWorkspaceImage, setNewWorkspaceImage] = useState(
     targetWorkspace?.workspaceImage || ""
   );
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const fileURL = URL.createObjectURL(e.target.files[0]);
+      setPreview(fileURL);
+      const formData = new FormData();
+      formData.append("image", e.target.files[0]);
+      const newWorkspaceImageUrl = await postAPI("/api/upload", formData);
+      console.log(newWorkspaceImageUrl.data);
+      setNewWorkspaceImage(newWorkspaceImageUrl.data);
+    }
+  };
 
   const handleSubmit = async () => {
     try {
@@ -68,7 +72,7 @@ const EditWorkspaceModal: React.FC<EditWorkspaceModalProps> = ({
       console.error("Workspace Update Failed", error);
     }
   };
-
+  console.log(targetWorkspace);
   return (
     <div
       className="fixed top-0 left-0 w-full h-full flex items-center justify-center z-60"

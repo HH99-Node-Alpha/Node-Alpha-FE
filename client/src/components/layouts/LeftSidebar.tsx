@@ -35,8 +35,11 @@ function LeftSidebar({
           <div className="flex gap-4 items-center cursor-default">
             <img
               className="w-[40px] h-[40px] rounded-md"
-              src={process.env.PUBLIC_URL + "/assets/dev-jeans.png"}
-              alt="user"
+              src={
+                workspace?.workspaceImage ||
+                process.env.PUBLIC_URL + "/assets/dev-jeans.png"
+              }
+              alt="workspace"
             />
             <div className="text-white">{workspace?.workspaceName}</div>
           </div>
