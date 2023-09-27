@@ -41,6 +41,15 @@ const SignIn: FC = () => {
     }
   };
 
+  const handleKakaoLogin = () => {
+    const SERVER_URL =
+      process.env.REACT_APP_SERVER_URL || "http://localhost:8000";
+    const kakaoOauthURL = `https://kauth.kakao.com/oauth/authorize?response_type=code&redirect_uri=${encodeURIComponent(
+      `${SERVER_URL}/api/kakao/callback`
+    )}&client_id=${process.env.REACT_APP_KAKAO_ID}`;
+    window.location.href = kakaoOauthURL;
+  };
+
   return (
     <>
       <div
@@ -94,7 +103,7 @@ const SignIn: FC = () => {
                 </button>
                 <button
                   className="w-[320px] h-10 rounded-md text-black bg-[#FFDD1D]"
-                  onClick={handleSubmit}
+                  onClick={handleKakaoLogin}
                 >
                   카카오 로그인
                 </button>
