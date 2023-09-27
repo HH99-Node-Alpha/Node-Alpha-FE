@@ -22,6 +22,7 @@ jobs:
         run: |
           cd client
           echo 'REACT_APP_SERVER_URL=${{ secrets.REACT_APP_SERVER_URL }}' > .env.production
+          echo 'REACT_APP_KAKAO_ID=${{ secrets.REACT_APP_KAKAO_ID }}' > .env.production
 
       - name: Install dependencies
         run: |
