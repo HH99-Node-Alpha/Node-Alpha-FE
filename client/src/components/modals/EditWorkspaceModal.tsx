@@ -42,7 +42,6 @@ const EditWorkspaceModal: React.FC<EditWorkspaceModalProps> = ({
       const formData = new FormData();
       formData.append("image", e.target.files[0]);
       const newWorkspaceImageUrl = await postAPI("/api/upload", formData);
-      console.log(newWorkspaceImageUrl.data);
       setNewWorkspaceImage(newWorkspaceImageUrl.data);
     }
   };
@@ -72,7 +71,6 @@ const EditWorkspaceModal: React.FC<EditWorkspaceModalProps> = ({
       console.error("Workspace Update Failed", error);
     }
   };
-  console.log(targetWorkspace);
   return (
     <div
       className="fixed top-0 left-0 w-full h-full flex items-center justify-center z-60"
