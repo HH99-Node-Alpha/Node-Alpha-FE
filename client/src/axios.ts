@@ -10,7 +10,7 @@ axios.interceptors.request.use(
       config.headers["Authorization"] = `Bearer ${token}`;
     }
     config.withCredentials = true;
-
+    console.log(config);
     return config;
   },
   (error) => {

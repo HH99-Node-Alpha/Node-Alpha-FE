@@ -28,6 +28,7 @@ const SignIn: FC = () => {
     event.preventDefault();
     try {
       const result = await postAPI("/api/login", signinRequest);
+      console.log(result);
       localStorage.setItem(
         "user",
         JSON.stringify({
